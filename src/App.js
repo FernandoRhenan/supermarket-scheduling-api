@@ -1,27 +1,26 @@
-import express, { urlencoded } from 'express';
-import userRoutes from './routes/UserRoutes.js';
+import express, { urlencoded } from 'express'
+import userRoutes from './routes/CompanyRoutes.js'
+import companyRoutes from './routes/CompanyRoutes.js'
 
 class App {
+
+	prefix = '/api/v1'
 	constructor() {
-		this.app = express();
-		this.config();
+		this.app = express()
+		this.config()
 		this.routes()
 	}
 
 	config() {
-		this.app.use(urlencoded({ extended: true }));
-		this.app.use(express.json());
+		this.app.use(urlencoded({ extended: true }))
+		this.app.use(express.json())
 	}
 
 	routes() {
-		this.app.use('/users', userRoutes.router);
+		this.app.use(`${this.prefix}/company`, companyRoutes.router)
 	}
-
 }
 
-export default new App().app;
-
+export default new App().app
 
 // Crie uma instância da classe de roteador
-
-
