@@ -23,14 +23,15 @@ class CompanyEntity {
 		const name = this.validateName()
 		const email = this.validateEmail()
 		const cnpj = this.validateCnpj()
-		const phones = this.validatePhones()
+		const phone = this.validatePhone()
+		const altPhone = this.validateAltPhone()
 		const password = this.validatePassword()
 
-		const validationArray = [name, email, cnpj, phones, password]
+		const validationArray = [name, email, cnpj, phone, altPhone, password]
 
 		const invalidFields = validationArray.map((item) => item.error ? item.message : '').filter(item => item)
 
-		if (!name.error && !password.error && !email.error && !cnpj.error && !phones.error) {
+		if (!name.error && !password.error && !email.error && !cnpj.error && !phone.error, !altPhone.error) {
 			return new DefaultValidationReturn({ error: false })
 		} else {
 			return new DefaultValidationReturn({
@@ -40,15 +41,15 @@ class CompanyEntity {
 
 	}
 
-	validatePassword(password = this._password) {
+	validatePassword() {
 		// RegEx que permite apenas a-z A-Z 0-9 ! @ # $ % & * ( )
 		// .test() retorna um boolean indicando se a password passada está de acordo com as regras do RegEx.
-		const passwordRegex = /^[a-zA-Z0-9!@#$%&*()\s]+$/.test(password)
+		const passwordRegex = /^[a-zA-Z0-9!@#$%&*()\s]+$/.test(this._password)
 		// OBS: passwordRegex está permitindo espaços em branco " ".
 
-		if (password.length < 6) {
+		if (this._password.length < 6) {
 			return new DefaultValidationReturn({ message: 'A senha deve conter pelo menos 6 caracteres', error: true })
-		} else if (password.length > 26) {
+		} else if (this._password.length > 26) {
 			return new DefaultValidationReturn({ message: 'A senha não pode conter mais que 26 caracteres', error: true })
 		} else if (!passwordRegex) {
 			return new DefaultValidationReturn({ message: 'Há caracteres não permitidos na senha', error: true })
@@ -57,12 +58,12 @@ class CompanyEntity {
 		}
 	}
 
-	validateName(name = this._name) {
-		const nameRegex = /^[a-zA-Z\s]+$/.test(name)
+	validateName() {
+		const nameRegex = /^[a-zA-Z\s]+$/.test(this._name)
 
-		if (name.length < 2) {
+		if (this._name.length < 2) {
 			return new DefaultValidationReturn({ message: 'O nome deve conter pelo menos 2 caracteres', error: true })
-		} else if (name.length > 26) {
+		} else if (this._name.length > 26) {
 			return new DefaultValidationReturn({ message: 'O nome não pode conter mais que 26 caracteres', error: true })
 		} else if (!nameRegex) {
 			return new DefaultValidationReturn({ message: 'Há caracteres não permitidos no nome', error: true })
@@ -71,13 +72,11 @@ class CompanyEntity {
 		}
 	}
 
-	validateEmail(email = this._email) {
-		const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(
-			email,
-		)
-		if (email.length < 7) {
+	validateEmail() {
+		const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(this._email)
+		if (this._email.length < 7) {
 			return new DefaultValidationReturn({ message: 'O email deve conter pelo menos 7 caracteres', error: true })
-		} else if (email.length > 50) {
+		} else if (this._email.length > 50) {
 			return new DefaultValidationReturn({ message: 'O email não pode conter mais que 50 caracteres', error: true })
 		} else if (!emailRegex) {
 			return new DefaultValidationReturn({ message: 'O email está mal formatado ou contém caracteres não permitidos', error: true })
@@ -86,12 +85,12 @@ class CompanyEntity {
 		}
 	}
 
-	validateCnpj(cnpj = this._cnpj) {
-		const cnpjRegex = /^[0-9]{14}$/.test(cnpj)
+	validateCnpj() {
+		const cnpjRegex = /^[0-9]{14}$/.test(this._cnpj)
 
-		if (cnpj.length > 14) {
+		if (this._cnpj.length > 14) {
 			return new DefaultValidationReturn({ message: 'O CNPJ informado tem mais que 14 números', error: true })
-		} else if (cnpj.length < 14) {
+		} else if (this._cnpj.length < 14) {
 			return new DefaultValidationReturn({ message: 'O CNPJ informado tem menos que 14 números', error: true })
 		} else if (!cnpjRegex) {
 			return new DefaultValidationReturn({ message: 'O campo CNPJ aceita apenas números', error: true })
@@ -100,22 +99,27 @@ class CompanyEntity {
 		}
 	}
 
-	validatePhones(phone = this._phone, altPhone = this._altPhone) {
-		const [phoneRegex, altPhoneRegex] = [
-			/^[0-9]{11}$/.test(phone),
-			/^[0-9]{11}$/.test(altPhone),
-		]
+	validatePhone() {
+		const phoneRegex = /^[0-9]{11}$/.test(this._phone)
 
-		if (phone.length > 11) {
+		if (this._phone.length > 11) {
 			return new DefaultValidationReturn({ message: 'O telefone informado tem mais que 11 números', error: true })
-		} else if (phone.length < 11) {
+		} else if (this._phone.length < 11) {
 			return new DefaultValidationReturn({ message: 'O telefone informado tem menos que 11 números', error: true })
-		} else if (altPhone.length > 11) {
-			return new DefaultValidationReturn({ message: 'O telefone secundário informado tem mais que 11 números', error: true })
-		} else if (altPhone.length < 11) {
-			return new DefaultValidationReturn({ message: 'O telefone secundário informado tem menos que 11 números', error: true })
 		} else if (!phoneRegex) {
 			return new DefaultValidationReturn({ message: 'O campo telefone aceita apenas números', error: true })
+		} else {
+			return new DefaultValidationReturn({ message: '', error: false })
+		}
+	}
+
+	validateAltPhone() {
+		const altPhoneRegex = /^[0-9]{11}$/.test(this._altPhone)
+
+		if (this._altPhone.length > 11) {
+			return new DefaultValidationReturn({ message: 'O telefone secundário informado tem mais que 11 números', error: true })
+		} else if (this._altPhone.length < 11) {
+			return new DefaultValidationReturn({ message: 'O telefone secundário informado tem menos que 11 números', error: true })
 		} else if (!altPhoneRegex) {
 			return new DefaultValidationReturn({ message: 'O campo telefone secundário aceita apenas números', error: true })
 		} else {
