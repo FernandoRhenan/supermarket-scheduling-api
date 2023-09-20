@@ -20,23 +20,28 @@ class CompanyEntity {
 	}
 
 	validateAll() {
+		const password = this.validatePassword()
 		const name = this.validateName()
 		const email = this.validateEmail()
 		const cnpj = this.validateCnpj()
 		const phone = this.validatePhone()
 		const altPhone = this.validateAltPhone()
-		const password = this.validatePassword()
 
-		const validationArray = [name, email, cnpj, phone, altPhone, password]
+		if (password.error || name.error || email.error || cnpj.error || phone.error || altPhone.error) {
 
-		const invalidFields = validationArray.map((item) => item.error ? item.message : '').filter(item => item)
+			let invalidArray = []
 
-		if (!name.error && !password.error && !email.error && !cnpj.error && !phone.error, !altPhone.error) {
-			return new DefaultValidationReturn({ error: false })
-		} else {
-			return new DefaultValidationReturn({
-				message: invalidFields[0], error: true
+			const array = [name, email, password, cnpj, phone, altPhone]
+
+			array.forEach((item) => {
+				if (item.error) {
+					invalidArray.push(item.message)
+				}
 			})
+
+			return new DefaultValidationReturn({ message: invalidArray, error: true })
+		} else {
+			return new DefaultValidationReturn({ message: '', error: false })
 		}
 
 	}
@@ -44,7 +49,7 @@ class CompanyEntity {
 	validatePassword() {
 		// RegEx que permite apenas a-z A-Z 0-9 ! @ # $ % & * ( )
 		// .test() retorna um boolean indicando se a password passada está de acordo com as regras do RegEx.
-		const passwordRegex = /^[a-zA-Z0-9!@#$%&*()\s]+$/.test(this._password)
+		const passwordRegex = /^[a-zA-Z0-9!@#$%&*()\s]{6,26}$/.test(this._password)
 		// OBS: passwordRegex está permitindo espaços em branco " ".
 
 		if (this._password.length < 6) {
@@ -59,7 +64,7 @@ class CompanyEntity {
 	}
 
 	validateName() {
-		const nameRegex = /^[a-zA-Z\s]+$/.test(this._name)
+		const nameRegex = /^[a-zA-Z0-9\s]+$/.test(this._name)
 
 		if (this._name.length < 2) {
 			return new DefaultValidationReturn({ message: 'O nome deve conter pelo menos 2 caracteres', error: true })
@@ -73,9 +78,9 @@ class CompanyEntity {
 	}
 
 	validateEmail() {
-		const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(this._email)
-		if (this._email.length < 7) {
-			return new DefaultValidationReturn({ message: 'O email deve conter pelo menos 7 caracteres', error: true })
+		const emailRegex = /^[a-zA-Z0-9._-]{2,}@[a-zA-Z0-9.-]{2,}\.[a-zA-Z]{2,4}$/.test(this._email)
+		if (this._email.length < 8) {
+			return new DefaultValidationReturn({ message: 'O email deve conter pelo menos 8 caracteres', error: true })
 		} else if (this._email.length > 50) {
 			return new DefaultValidationReturn({ message: 'O email não pode conter mais que 50 caracteres', error: true })
 		} else if (!emailRegex) {
@@ -128,4 +133,6 @@ class CompanyEntity {
 	}
 }
 
+
 export default CompanyEntity
+

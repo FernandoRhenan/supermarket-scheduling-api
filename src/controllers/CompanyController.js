@@ -3,17 +3,17 @@ import CompanyEntity from '../entities/CompanyEntity.js'
 import DefaultHTTPReturn from '../utils/returnTypes/DefaultHTTPReturn.js'
 
 class CompanyController {
-	async getAllUsers(req) {
+	async checkCnpj(req) {
 
 		const { cnpj } = req
 
-		const { error, message } = new CompanyEntity().validateCnpj(cnpj)
+		const { error, message } = new CompanyEntity({ cnpj }).validateCnpj()
 
 		if (error) {
 			return new DefaultHTTPReturn({ statusCode: 400, message, error })
 		}
 
-		const data = await companyService.getAllUsers(req)
+		const data = await companyService.checkCnpj(cnpj)
 		return data
 	}
 }

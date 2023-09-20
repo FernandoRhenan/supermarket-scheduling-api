@@ -10,8 +10,7 @@ class CompanyRoutes extends GrandRoute {
 	initializeRoutes() {
 		this.router.get('/check-cnpj/:cnpj', async (req, res) => {
 			const { cnpj } = req.params
-			const data = await companyController.getAllUsers({ cnpj })
-			console.log(data)
+			const data = await companyController.checkCnpj({ cnpj })
 			res.status(data.statusCode).json(data)
 		})
 	}
