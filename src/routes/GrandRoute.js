@@ -1,11 +1,11 @@
-import { Router } from 'express';
+import {Router} from 'express'
 
 class GrandRoute {
 	constructor() {
-		this.router = Router();
+		this.router = Router()
 	}
 	// Método polimórfico
-	initializeRoutes() { }
+	initializeRoutes() {}
 }
 
-export default GrandRoute;
+export default GrandRoute
