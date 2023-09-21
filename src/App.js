@@ -1,5 +1,4 @@
 import express, { urlencoded } from 'express'
-import userRoutes from './routes/CompanyRoutes.js'
 import companyRoutes from './routes/CompanyRoutes.js'
 
 class App {

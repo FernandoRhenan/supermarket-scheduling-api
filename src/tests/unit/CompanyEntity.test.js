@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+
 import CompanyEntity from '../../entities/CompanyEntity.js'
 
 describe('Validate company validateAll method', () => {
@@ -78,7 +78,6 @@ describe('Validate company validateAll method', () => {
 		}
 		expect(allValidation).toEqual(expected)
 	})
-
 })
 
 describe('Validate company validatePassword method', () => {
