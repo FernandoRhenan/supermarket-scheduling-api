@@ -1,7 +1,9 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import companyService from '../../services/CompanyService.js'; // Importe sua classe aqui
+import companyService from '../../services/CompanyService.js';
 import DefaultHTTPReturn from '../../utils/returnTypes/DefaultHTTPReturn.js';
+import { describe, it, afterEach, expect } from 'vitest';
+import companyController from '../../controllers/CompanyController.js';
 
 describe('CompanyService', () => {
 	// Criando uma instância do axios-mock-adapter
@@ -11,46 +13,44 @@ describe('CompanyService', () => {
 		mock.reset(); // Limpa o estado do mock após cada teste
 	});
 
-	it('deve retornar um DefaultHTTPReturn com status 200 quando o CNPJ é válido', async () => {
+	it('should return a DefaultHTTPReturn with status 200 when CNPJ is valid', async () => {
 		const cnpj = '47960950000121';
 
 		// Configura o mock para simular uma resposta bem-sucedida
 		mock.onGet(`https://receitaws.com.br/v1/cnpj/${cnpj}`).reply(200, {
-			status: 'OK',
-			nome: 'Empresa Exemplo',
-			email: 'empresa@example.com',
-			telefone: '1234567890',
-			cnpj: cnpj,
+			status: 'OK', // (Simulação de todos os dados retornados da chamada do endpoint acima)
+			nome: "MAGAZINE LUIZA S/A",
+			email: "fiscal.estadual@magazineluiza.com.br",
+			telefone: "(16) 3711-2002",
+			cnpj: "47.960.950/0001-21"
 		});
 
-		const result = await companyService.checkCnpj(cnpj);
-
+		const result = await companyController.checkCnpj({ cnpj });
 
 		expect(result).toEqual(
 			new DefaultHTTPReturn({
 				error: false,
 				statusCode: 200,
 				data: {
-					name: 'Empresa Exemplo',
-					email: 'empresa@example.com',
-					phone: '1234567890',
-					cnpj: cnpj,
+					name: "MAGAZINE LUIZA S/A",
+					email: "fiscal.estadual@magazineluiza.com.br",
+					phone: "(16) 3711-2002",
+					cnpj: '47.960.950/0001-21',
 				},
 			})
 		);
 	});
 
-	it('deve retornar um DefaultHTTPReturn com status 400 quando o CNPJ não é válido', async () => {
-		const cnpj = 'cnpj-invalido';
+	it('shoulf return a DefaultHTTPReturn with status 400 when CNPJ is not valid', async () => {
+		const cnpj = '00000000000000';
 
 		// Configura o mock para simular uma resposta de erro
 		mock.onGet(`https://receitaws.com.br/v1/cnpj/${cnpj}`).reply(200, {
-			status: 'ERROR',
+			status: 'ERROR', // (Simulação de todos os dados retornados da chamada do endpoint acima)
 			message: 'CNPJ inválido',
 		});
 
-		const result = await companyService.checkCnpj(cnpj);
-		console.log(result)
+		const result = await companyController.checkCnpj({ cnpj });
 
 		expect(result).toEqual(
 			new DefaultHTTPReturn({
@@ -61,7 +61,7 @@ describe('CompanyService', () => {
 		);
 	});
 
-	it('deve retornar um DefaultHTTPReturn com status 500 em caso de erro na chamada de rede', async () => {
+	it('should return a DefaultHTTPReturn with status 500 if have a network problem', async () => {
 		const cnpj = '47960950000121';
 
 		// Configura o mock para simular uma falha na chamada de rede
@@ -70,7 +70,7 @@ describe('CompanyService', () => {
 		const result = await companyService.checkCnpj(cnpj);
 		expect(result).toEqual(
 			new DefaultHTTPReturn({
-				error: true,
+				error: true, // (Simulação de todos os dados retornados da chamada do endpoint acima)
 				statusCode: 500,
 				message: 'Ocorreu um erro, por favor, tente novamente mais tarde',
 			})
