@@ -46,6 +46,14 @@ class CompanyEntity {
 
 	}
 
+	get password() {
+		return this._password
+	}
+
+	set password(hash) {
+		this._password = hash
+	}
+
 	validatePassword() {
 		// RegEx que permite apenas a-z A-Z 0-9 ! @ # $ % & * ( )
 		// .test() retorna um boolean indicando se a password passada está de acordo com as regras do RegEx.
@@ -131,6 +139,7 @@ class CompanyEntity {
 			return new DefaultValidationReturn({ message: '', error: false })
 		}
 	}
+
 }
 
 

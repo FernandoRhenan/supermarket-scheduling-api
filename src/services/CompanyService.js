@@ -25,6 +25,17 @@ class CompanyService {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
 		}
 	}
+
+	async register(company) {
+		try {
+
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: data })
+
+		} catch {
+			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
+
+		}
+	}
 }
 
 export default new CompanyService();
