@@ -4,6 +4,7 @@ import DefaultHTTPReturn from '../utils/returnTypes/DefaultHTTPReturn.js'
 import bcrypt from 'bcryptjs'
 
 class CompanyController {
+
 	async checkCnpj(req) {
 
 		const { cnpj } = req

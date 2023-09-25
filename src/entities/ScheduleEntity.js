@@ -5,7 +5,7 @@ class ScheduleEntity {
 		company_id = null,
 		date = '',
 		done = false,
-		isActive = null
+		isActive = false
 	}) {
 		this._date = date
 		this._company_id = company_id

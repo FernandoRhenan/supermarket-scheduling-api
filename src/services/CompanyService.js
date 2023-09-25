@@ -1,5 +1,7 @@
 import axios from 'axios'
 import DefaultHTTPReturn from '../utils/returnTypes/DefaultHTTPReturn.js'
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient();
 
 class CompanyService {
 	async checkCnpj(cnpj) {
@@ -27,9 +29,24 @@ class CompanyService {
 	}
 
 	async register(company) {
+
+		const { _name, _email, _cnpj, _corporateName, _phone, _altPhone, _password } = company
 		try {
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: data })
+			const savedCompany = await prisma.company.create({
+				data: {
+					name: _name,
+					email: _email,
+					cnpj: _cnpj,
+					corporateName: _corporateName,
+					phone: _phone,
+					altPhone: _altPhone,
+					password: _password
+				},
+				select: { email: true }
+			})
+
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: savedCompany })
 
 		} catch {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })

@@ -5,7 +5,7 @@ import DefaultHTTPReturn from '../../utils/returnTypes/DefaultHTTPReturn.js';
 import { describe, it, afterEach, expect } from 'vitest';
 import companyController from '../../controllers/CompanyController.js';
 
-describe('CompanyService', () => {
+describe('checkCnpj', () => {
 	// Criando uma instância do axios-mock-adapter
 	const mock = new MockAdapter(axios);
 
@@ -41,8 +41,8 @@ describe('CompanyService', () => {
 		);
 	});
 
-	it('shoulf return a DefaultHTTPReturn with status 400 when CNPJ is not valid', async () => {
-		const cnpj = '00000000000000';
+	it('should return a DefaultHTTPReturn with status 400 when CNPJ is not valid', async () => {
+		const cnpj = '00000000001231';
 
 		// Configura o mock para simular uma resposta de erro
 		mock.onGet(`https://receitaws.com.br/v1/cnpj/${cnpj}`).reply(200, {
@@ -76,4 +76,13 @@ describe('CompanyService', () => {
 			})
 		);
 	});
+});
+
+
+describe('register', () => {
+
+	afterEach(() => {
+		mock.reset(); // Limpa o estado do mock após cada teste
+	});
+
 });

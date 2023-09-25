@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id            Int        @id @default(autoincrement())
+  name          String
+  email         String     @unique
+  cnpj          String
+  corporateName String
+  phone         String
+  altPhone      String
+  password      String
+  schedules     Schedule[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("companies")
+}
+
+model Schedule {
+  id         Int      @id @default(autoincrement())
+  date       DateTime
+  done       Boolean
+  isActive   Boolean
+  Company    Company? @relation(fields: [company_id], references: [id])
+  company_id Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("schedules")
+}
