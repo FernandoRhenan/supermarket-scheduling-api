@@ -11,15 +11,17 @@ datasource db {
 }
 
 model Company {
-  id            Int        @id @default(autoincrement())
-  name          String
-  email         String     @unique
-  cnpj          String
-  corporateName String
-  phone         String
-  altPhone      String
-  password      String
-  schedules     Schedule[]
+  id               Int        @id @default(autoincrement())
+  name             String
+  email            String     @unique
+  cnpj             String     @unique
+  corporateName    String
+  phone            String
+  altPhone         String
+  password         String
+  confirmedAccount Boolean
+  isAdmin          Boolean
+  schedules        Schedule[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

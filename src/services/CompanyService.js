@@ -1,9 +1,15 @@
+import 'dotenv/config.js'
 import axios from 'axios'
 import DefaultHTTPReturn from '../utils/returnTypes/DefaultHTTPReturn.js'
 import { PrismaClient } from '@prisma/client'
-const prisma = new PrismaClient();
+import nodemailer from 'nodemailer';
+import jwt from 'jsonwebtoken'
 
 class CompanyService {
+	constructor() {
+		this.prisma = new PrismaClient();
+	}
+
 	async checkCnpj(cnpj) {
 		try {
 			const { data } = await axios.get(`https://receitaws.com.br/v1/cnpj/${cnpj}`)
@@ -30,10 +36,16 @@ class CompanyService {
 
 	async register(company) {
 
-		const { _name, _email, _cnpj, _corporateName, _phone, _altPhone, _password } = company
+		const { _name, _email, _cnpj, _corporateName, _phone, _altPhone, _password, _confirmedAccount, _isAdmin } = company
 		try {
 
-			const savedCompany = await prisma.company.create({
+			const emailCount = await this.prisma.company.count({ where: { email: _email } })
+
+			if (emailCount !== 0) {
+				return new DefaultHTTPReturn({ error: false, statusCode: 400, message: 'E-mail já cadastrado' })
+			}
+
+			const savedCompany = await this.prisma.company.create({
 				data: {
 					name: _name,
 					email: _email,
@@ -41,12 +53,68 @@ class CompanyService {
 					corporateName: _corporateName,
 					phone: _phone,
 					altPhone: _altPhone,
-					password: _password
+					password: _password,
+					confirmedAccount: _confirmedAccount,
+					isAdmin: _isAdmin
 				},
-				select: { email: true }
+				select: { email: true, id: true }
 			})
 
 			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: savedCompany })
+
+		} catch {
+			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
+
+		}
+	}
+
+	async sendEmailValidation(credentials) {
+
+		const { email, token } = credentials
+
+		try {
+
+			const transporter = nodemailer.createTransport({
+				host: process.env.EMAIL_HOST,
+				port: process.env.EMAIL_PORT,
+				// secure: true,
+				auth: {
+					user: process.env.EMAIL_USER,
+					pass: process.env.EMAIL_PASS,
+				},
+			});
+
+			const info = await transporter.sendMail({
+				from: process.env.EMAIL_SENDER, // sender address
+				to: email, // list of receivers
+				subject: "Hello ✔", // Subject line
+				text: "Hello world?", // plain text body
+				html: `<b>Hello world? <a href=${process.env.SITE_URL}/email-validation/${token}>Confimar e-mail</a></b>`, // html body
+			});
+
+
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: `Seu e-mail de confirmação foi enviado para ${email}` })
+
+		} catch {
+			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
+
+		}
+	}
+
+	async confirmEmail(data) {
+
+		const { email, id } = data
+		try {
+
+			const company = await this.prisma.company.update({
+				where: { email, id: Number(id) },
+				data: { confirmedAccount: true },
+				select: { id: true }
+			})
+
+			const token = jwt.sign({ id: company.id, isAdmin: false }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Sua conta foi confirmada', data: { token } })
 
 		} catch {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })

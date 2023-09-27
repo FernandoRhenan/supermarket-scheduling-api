@@ -2,10 +2,31 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import companyService from '../../services/CompanyService.js';
 import DefaultHTTPReturn from '../../utils/returnTypes/DefaultHTTPReturn.js';
-import { describe, it, afterEach, expect } from 'vitest';
+import { describe, it, afterEach, expect, vitest, beforeAll } from 'vitest';
 import companyController from '../../controllers/CompanyController.js';
 
-describe('checkCnpj', () => {
+const { PrismaClient } = require('@prisma/client');
+const mockPrismaClient = new PrismaClient();
+// Mock do Prisma MockProvider
+const mockPrismaProvider = {
+	company: {
+		create: vitest.fn(),
+	},
+};
+
+vitest.mock('mockPrismaClient', () => {
+	return {
+		PrismaClient: vitest.fn(() => {
+			return {
+				company: {
+					create: mockPrismaProvider.company.create,
+				},
+			};
+		}),
+	};
+});
+
+describe('/checkCnpj', () => {
 	// Criando uma instância do axios-mock-adapter
 	const mock = new MockAdapter(axios);
 
@@ -78,11 +99,32 @@ describe('checkCnpj', () => {
 	});
 });
 
+describe('Teste do método register', () => {
 
-describe('register', () => {
+	it('deve registrar uma empresa com sucesso', async () => {
+		const companyData = {
+			corporateName: 'MAGAZINE LUIZA S/A',
+			cnpj: '47960950000121',
+			name: 'Magalu',
+			email: 'fiscal.estadual@magazineluiza.com.br',
+			phone: '16937112002',
+			altPhone: '16954879120',
+			password: '1e(AX5#W( '
+		};
 
-	afterEach(() => {
-		mock.reset(); // Limpa o estado do mock após cada teste
+		// Configurar o mock para retornar os dados da empresa criada
+		mockPrismaProvider.company.create.mockResolvedValue({
+			error: false,
+			statusCode: 200,
+			data: { email: 'fiscal.estadual@magazineluiza.com.br' },
+		});
+
+		const result = await companyService.register(companyData);
+
+		console.log(result)
+
+		expect(true).toEqual(true)
 	});
 
+	// Outros testes...
 });

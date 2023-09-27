@@ -2,6 +2,7 @@ import companyService from '../services/CompanyService.js'
 import CompanyEntity from '../entities/CompanyEntity.js'
 import DefaultHTTPReturn from '../utils/returnTypes/DefaultHTTPReturn.js'
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 
 class CompanyController {
 
@@ -36,6 +37,40 @@ class CompanyController {
 		return data
 
 	}
+
+	async sendEmailValidation(credentials) {
+
+		const { email, id } = credentials
+
+		const company = new CompanyEntity({ email })
+
+		const { message, error } = company.validateEmail()
+
+		if (error) {
+			return new DefaultHTTPReturn({ statusCode: 400, message, error })
+		}
+
+		const token = jwt.sign({ email, id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+		const data = await companyService.sendEmailValidation({ email, token })
+		return data
+
+	}
+
+	async confirmEmail(token) {
+
+		try {
+			const { email, id } = jwt.verify(token, process.env.JWT_SECRET);
+
+			const data = await companyService.confirmEmail({ email, id })
+			return data
+
+		} catch {
+			return new DefaultHTTPReturn({ statusCode: 500, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', error: true })
+		}
+
+	}
+
 }
 
 export default new CompanyController()

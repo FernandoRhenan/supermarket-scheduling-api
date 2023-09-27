@@ -9,6 +9,8 @@ class CompanyEntity {
 		phone = '',
 		altPhone = '',
 		password = '',
+		confimedAccount = false,
+		isAdmin = false
 	}) {
 		this._name = name
 		this._email = email
@@ -17,6 +19,8 @@ class CompanyEntity {
 		this._phone = phone
 		this._altPhone = altPhone
 		this._password = password
+		this._confirmedAccount = confimedAccount
+		this._isAdmin = isAdmin
 	}
 
 	validateAll() {
