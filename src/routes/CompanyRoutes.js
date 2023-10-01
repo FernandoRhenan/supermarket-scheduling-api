@@ -1,5 +1,7 @@
 import GrandRoute from './GrandRoute.js'
 import companyController from '../controllers/CompanyController.js'
+import DefaultHTTPReturn from '../utils/returnTypes/DefaultHTTPReturn.js'
+import verifyToken from '../middlewares/VerifyJWT.js'
 
 class CompanyRoutes extends GrandRoute {
 	constructor() {
@@ -32,6 +34,10 @@ class CompanyRoutes extends GrandRoute {
 			const { token } = req.body
 			const data = await companyController.confirmEmail(token)
 			res.status(data.statusCode).json(data)
+		})
+
+		this.router.get('/', verifyToken, async (req, res) => {
+			res.status(500).json({ companyId: req.companyId, isAdmin: req.isAdmin })
 		})
 	}
 }

@@ -112,7 +112,7 @@ class CompanyService {
 				select: { id: true }
 			})
 
-			const token = jwt.sign({ id: company.id, isAdmin: false }, process.env.JWT_SECRET, { expiresIn: '1h' });
+			const token = jwt.sign({ companyId: company.id, isAdmin: false }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
 			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Sua conta foi confirmada', data: { token } })
 
