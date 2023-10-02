@@ -32,8 +32,8 @@ model Company {
 model Schedule {
   id         Int      @id @default(autoincrement())
   date       DateTime
-  done       Boolean
   isActive   Boolean
+  frequency  String
   Company    Company? @relation(fields: [company_id], references: [id])
   company_id Int
 

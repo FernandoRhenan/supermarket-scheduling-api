@@ -4,12 +4,12 @@ class ScheduleEntity {
 	constructor({
 		company_id = null,
 		date = '',
-		done = false,
+		frequency = 'once',
 		isActive = false
 	}) {
 		this._date = date
 		this._company_id = company_id
-		this._done = done
+		this._frequency = frequency
 		this._isActive = isActive
 	}
 
@@ -17,12 +17,14 @@ class ScheduleEntity {
 
 		const date = this.validateDate()
 		const companyId = this.validateCompanyId()
+		const frequency = this.validateFrequency()
 
-		if (date.error || companyId.error) {
+
+		if (date.error || companyId.error || frequency.error) {
 
 			let invalidArray = []
 
-			const array = [companyId, date]
+			const array = [companyId, date, frequency]
 
 			array.forEach((item) => {
 				if (item.error) {
@@ -34,6 +36,16 @@ class ScheduleEntity {
 		} else {
 			return new DefaultValidationReturn({ message: '', error: false })
 		}
+
+	}
+
+	validateFrequency() {
+
+		if (this.frequency !== 'once' || this.frequency !== 'weekly' || this.frequency !== 'biweekly' || this.frequency !== 'monthly' || this.frequency !== 'bimonthly') {
+			return new DefaultValidationReturn({ message: 'Periodicidade não permitida', error: true })
+		}
+
+		return new DefaultValidationReturn({ message: '', error: false })
 
 	}
 

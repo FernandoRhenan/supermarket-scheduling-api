@@ -1,5 +1,6 @@
 import express, { urlencoded } from 'express'
 import companyRoutes from './routes/CompanyRoutes.js'
+import scheduleRoutes from './routes/ScheduleRoutes.js'
 
 class App {
 
@@ -17,6 +18,7 @@ class App {
 
 	routes() {
 		this.app.use(`${this.prefix}/company`, companyRoutes.router)
+		this.app.use(`${this.prefix}/schedule`, scheduleRoutes.router)
 	}
 }
 

@@ -4,6 +4,7 @@ import DefaultHTTPReturn from '../utils/returnTypes/DefaultHTTPReturn.js'
 import { PrismaClient } from '@prisma/client'
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken'
+import bcrypt from 'bcryptjs'
 
 class CompanyService {
 	constructor() {
@@ -121,6 +122,39 @@ class CompanyService {
 
 		}
 	}
+
+	async login(body) {
+
+		const { cnpj, password } = body
+
+		try {
+			const company = await this.prisma.company.findUnique({
+				where: { cnpj },
+				select: { id: true, password: true, confirmedAccount: true }
+			})
+
+			if (company.password) {
+				const unhashedPass = await bcrypt.compare(password, company.password)
+				if (!unhashedPass) {
+					return new DefaultHTTPReturn({ statusCode: 400, message: 'Credenciais inválidas', error: true })
+				}
+			}
+			if (!company.confirmedAccount) {
+				return new DefaultHTTPReturn({ statusCode: 401, message: 'Sua conta ainda não foi confirmada', error: true })
+			}
+
+			const token = jwt.sign({ companyId: company.id, isAdmin: false }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: { token } })
+
+
+		} catch {
+			return new DefaultHTTPReturn({ error: true, statusCode: 500, message: 'Ocorreu um erro, por favor, tente novamente mais tarde' })
+
+		}
+
+	}
+
 }
 
 export default new CompanyService();

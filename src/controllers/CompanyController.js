@@ -71,6 +71,22 @@ class CompanyController {
 
 	}
 
+	async login(body) {
+
+		const { cnpj, password } = body
+
+		const company = new CompanyEntity({ cnpj, password })
+		const cnpjValidation = company.validateCnpj()
+		const passValidation = company.validatePassword()
+
+		if (cnpjValidation.error || passValidation.error) {
+			return new DefaultHTTPReturn({ statusCode: 400, message: 'Credenciais inválidas', error: true })
+		}
+
+		const data = await companyService.login(body)
+		return data
+
+	}
 }
 
 export default new CompanyController()
