@@ -17,7 +17,6 @@ class ScheduleRoutes extends GrandRoute {
 
 		this.router.post('/create-schedule', verifyToken, async (req, res) => {
 			const body = { ...req.body, company_id: req.companyId }
-			console.log(body)
 			const data = await scheduleController.createSchedule(body)
 			res.status(data.statusCode).json(data)
 		})

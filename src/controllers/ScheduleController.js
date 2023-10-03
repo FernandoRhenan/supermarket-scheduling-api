@@ -13,14 +13,14 @@ class ScheduleController {
 
 	async createSchedule(body) {
 
-		const schedule = new ScheduleEntity(body)
-		const { error, message } = schedule.validateAll()
+		const { date, company_id, frequency, isActive } = body
 
+		const schedule = new ScheduleEntity({ date, company_id, frequency, isActive })
+		const { error, message } = schedule.validateAll()
 		if (error) {
 			return new DefaultHTTPReturn({ statusCode: 400, message, error })
 		}
-
-		const data = await scheduleService.createSchedule(schedule)
+		const data = await scheduleService.createSchedule(body)
 		return data
 
 	}

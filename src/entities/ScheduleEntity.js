@@ -40,19 +40,18 @@ class ScheduleEntity {
 	}
 
 	validateFrequency() {
-
-		if (this.frequency !== 'once' || this.frequency !== 'weekly' || this.frequency !== 'biweekly' || this.frequency !== 'monthly' || this.frequency !== 'bimonthly') {
+		if (this._frequency == 'once' || this._frequency == 'weekly' || this._frequency == 'biweekly' || this._frequency == 'monthly') {
+			return new DefaultValidationReturn({ message: '', error: false })
+		} else {
 			return new DefaultValidationReturn({ message: 'Periodicidade não permitida', error: true })
 		}
-
-		return new DefaultValidationReturn({ message: '', error: false })
 
 	}
 
 	validateDate() {
 
 		// Garante o padrão ISO8601, para salvar datas no banco de dados
-		const dateRegex = /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z$/.test(this._date)
+		const dateRegex = /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{3}Z$/.test(this._date)
 		if (!dateRegex) {
 			return new DefaultValidationReturn({ message: 'Há algum erro de formatação na data', error: true })
 		}

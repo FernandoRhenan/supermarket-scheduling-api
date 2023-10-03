@@ -5,6 +5,7 @@ import { PrismaClient } from '@prisma/client'
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
+import DateScheduler from '../utils/DateScheduler.js';
 
 class ScheduleService {
 	constructor() {
@@ -35,37 +36,26 @@ class ScheduleService {
 
 	async createSchedule(schedule) {
 
-		// const usersToInsert = [
-		// 	{ name: 'Alice', email: 'alice@example.com' },
-		// 	{ name: 'Bob', email: 'bob@example.com' },
-		// 	{ name: 'Charlie', email: 'charlie@example.com' },
-		// ];
+		const { date, company_id, frequency, isActive } = schedule
 
-		// async function insertUsers() {
-		// 	try {
-		// 		const insertedUsers = await prisma.user.createMany({
-		// 			data: usersToInsert,
-		// 		});
+		const { data, error, message } = new DateScheduler({ date, frequency, monthRange: 2 }).calcSchedules()
 
-		switch (schedule.frequency) {
-			case 'once':
-				try {
-					await this.prisma.schedule.create({
-						data: { date: schedule.date, frequency: schedule.frequency, isActive: schedule.isActive, company_id: schedule.company_id },
-					})
-					return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Agendamento criado' })
-				} catch {
-					return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
-				}
-			case 'weekly':
-			case 'biweekly':
-			case 'monthly':
-			case 'bimonthly':
+		if (error) {
+			return new DefaultHTTPReturn({ error: true, statusCode: 400, message })
 		}
 
+		try {
 
+			// ??Inserir dados no banco
+			await this.prisma.schedule.createMany({
+				data: data
+			})
 
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: data, message: 'Confirme seu agendamento' })
+		} catch {
+			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
 
+		}
 
 
 	}
