@@ -25,6 +25,33 @@ class ScheduleController {
 
 	}
 
+	async confirmSchedule(schedules) {
+		if (schedules.length > 1) {
+			schedules.forEach((item) => {
+				if (typeof item !== 'number') {
+					return new DefaultHTTPReturn({ statusCode: 400, message: 'Identificador inválido', error: true })
+				}
+			})
+
+			const data = await scheduleService.confirmSchedules(schedules)
+			return data
+
+		} else if (schedules.length == 1) {
+			if (typeof schedules[0] !== 'number') {
+				return new DefaultHTTPReturn({ statusCode: 400, message: 'Identificador inválido', error: true })
+			}
+			const data = await scheduleService.confirmSchedule(schedules[0])
+			return data
+
+		} else {
+			return new DefaultHTTPReturn({ statusCode: 400, message: 'Identificador inválido', error: true })
+
+		}
+
+
+
+	}
+
 }
 
 export default new ScheduleController()

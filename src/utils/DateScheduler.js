@@ -16,11 +16,7 @@ class DateScheduler {
 		const dates = [];
 
 		switch (this.frequency) {
-			case 'once':
 
-				dates.push({ date: new Date(baseDate) })
-
-				return new DefaultInternalReturn({ error: false, data: dates })
 			case 'weekly':
 
 				while (baseDate < maxDate) {
@@ -48,7 +44,7 @@ class DateScheduler {
 				while (baseDate < maxDate) {
 					dates.push({ date: new Date(baseDate) })
 
-					baseDate.setUTCMonth(baseDate.getUTCMonth() + 1);
+					baseDate.setUTCDate(baseDate.getUTCDate() + 28);
 				}
 
 				return new DefaultInternalReturn({ error: false, data: dates })

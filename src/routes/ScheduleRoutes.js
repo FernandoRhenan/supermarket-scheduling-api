@@ -21,6 +21,11 @@ class ScheduleRoutes extends GrandRoute {
 			res.status(data.statusCode).json(data)
 		})
 
+		this.router.patch('/confirm-schedule', verifyToken, async (req, res) => {
+			const data = await scheduleController.confirmSchedule(req.body.schedule)
+			res.status(data.statusCode).json(data)
+		})
+
 	}
 
 }

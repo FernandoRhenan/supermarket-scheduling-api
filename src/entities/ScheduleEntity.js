@@ -60,7 +60,7 @@ class ScheduleEntity {
 		const minRange = new Date(dateNow.setUTCDate(dateNow.getUTCDate() + 1))
 		const scheduleDate = new Date(this._date)
 		// retorna uma nova data 2 meses depois da minRange
-		const maxRange = new Date(new Date(minRange).setUTCMonth(minRange.getUTCMonth() + 2))
+		const maxRange = new Date(new Date(minRange).setUTCMonth(minRange.getUTCMonth() + 1))
 
 		if (scheduleDate < minRange) {
 			return new DefaultValidationReturn({ message: 'Data de agendamento restringida', error: true })
