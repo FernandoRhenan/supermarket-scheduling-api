@@ -20,12 +20,24 @@ class ScheduleController {
 		if (error) {
 			return new DefaultHTTPReturn({ statusCode: 400, message, error })
 		}
-		const data = await scheduleService.createSchedule(body)
-		return data
+
+		// Se for um agendamento unico, é chamado o service 'createSchedule', se não, é chamado o 'createSchedules'
+		if (frequency === 'once') {
+			const data = await scheduleService.createSchedule(body)
+			return data
+		} else {
+			const data = await scheduleService.createSchedules(body)
+			return data
+		}
 
 	}
 
 	async confirmSchedule(schedules) {
+
+		if (typeof schedules !== 'object') {
+			return new DefaultHTTPReturn({ statusCode: 400, message: 'Identificador inválido', error: true })
+		}
+
 		if (schedules.length > 1) {
 			schedules.forEach((item) => {
 				if (typeof item !== 'number') {
@@ -45,10 +57,7 @@ class ScheduleController {
 
 		} else {
 			return new DefaultHTTPReturn({ statusCode: 400, message: 'Identificador inválido', error: true })
-
 		}
-
-
 
 	}
 

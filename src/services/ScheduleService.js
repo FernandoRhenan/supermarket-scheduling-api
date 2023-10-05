@@ -38,42 +38,52 @@ class ScheduleService {
 
 		const { date, company_id, frequency, isActive } = schedule
 
-		if (frequency === 'once') {
+		try {
 
-			try {
+			await this.prisma.schedule.create({
+				data: { date, company_id, isActive, frequency }
+			})
 
-				await this.prisma.schedule.create({
-					data: { date, company_id, isActive, frequency }
-				})
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: data, message: 'Confirme seu agendamento' })
+		} catch {
+			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
+		}
 
-				return new DefaultHTTPReturn({ error: false, statusCode: 200, data: data, message: 'Confirme seu agendamento' })
-			} catch {
-				return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
-			}
+	}
 
-		} else {
+	async createSchedules(schedule) {
 
-			const { data, error, message } = new DateScheduler({ date, frequency, monthRange: 2 }).calcSchedules()
+		const { date, company_id, frequency, isActive } = schedule
 
-			if (error) {
-				return new DefaultHTTPReturn({ error: true, statusCode: 400, message })
-			}
+		// Classe que gera os seguintes agendamentos baseado nos parâmentros
+		const { data, error, message } = new DateScheduler({ date, frequency, monthRange: 2 }).calcSchedules()
 
-			try {
-				const dataArray = []
-				data.forEach((item) => {
-					dataArray.push({ date: item.date, company_id, isActive, frequency })
-				});
+		if (error) {
+			return new DefaultHTTPReturn({ error: true, statusCode: 400, message })
+		}
 
-				await this.prisma.schedule.createMany({
-					data: dataArray
-				})
+		try {
+			const dataArray = []
+			data.forEach((item) => {
+				dataArray.push({ date: item.date, company_id, isActive, frequency })
+			});
 
-				return new DefaultHTTPReturn({ error: false, statusCode: 200, data: data, message: 'Confirme seu agendamento' })
-			} catch {
-				return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
-			}
+			const count = await this.prisma.schedule.count({
+				where: {
+					date: { in: dataArray }
+				}
+			})
 
+			console.log(count)
+
+			// Cria vários agendamentos baseado no resultado indicado pelo 'DateScheduler'
+			await this.prisma.schedule.createMany({
+				data: dataArray
+			})
+
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: data, message: 'Confirme seu agendamento' })
+		} catch {
+			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
 		}
 
 	}
