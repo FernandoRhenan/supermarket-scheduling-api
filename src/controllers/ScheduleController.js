@@ -4,9 +4,9 @@ import scheduleService from '../services/ScheduleService.js'
 
 class ScheduleController {
 
-	async checkAllSchedules() {
+	async checkMonthSchedules(month) {
 
-		const data = await scheduleService.checkAllSchedules()
+		const data = await scheduleService.checkMonthSchedules(month)
 		return data
 
 	}

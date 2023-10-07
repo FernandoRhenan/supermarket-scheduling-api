@@ -130,7 +130,7 @@ class CompanyService {
 		try {
 			const company = await this.prisma.company.findUnique({
 				where: { cnpj },
-				select: { id: true, password: true, confirmedAccount: true }
+				select: { id: true, password: true, confirmedAccount: true, isAdmin: true }
 			})
 
 			if (company.password) {
@@ -143,7 +143,7 @@ class CompanyService {
 				return new DefaultHTTPReturn({ statusCode: 401, message: 'Sua conta ainda não foi confirmada', error: true })
 			}
 
-			const token = jwt.sign({ companyId: company.id, isAdmin: false }, process.env.JWT_SECRET, { expiresIn: '1h' });
+			const token = jwt.sign({ companyId: company.id, isAdmin: company.isAdmin }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
 			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: { token } })
 

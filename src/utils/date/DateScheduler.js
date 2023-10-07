@@ -1,4 +1,4 @@
-import DefaultInternalReturn from "./returnTypes/DefaultInternalReturn.js";
+import DefaultInternalReturn from "../returnTypes/DefaultInternalReturn.js";
 
 
 class DateScheduler {

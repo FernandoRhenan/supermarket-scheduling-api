@@ -5,22 +5,33 @@ import { PrismaClient } from '@prisma/client'
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
-import DateScheduler from '../utils/DateScheduler.js';
+import DateScheduler from '../utils/date/DateScheduler.js';
+import ThisMonth from '../utils/date/ThisMonth.js';
 
 class ScheduleService {
 	constructor() {
 		this.prisma = new PrismaClient();
 	}
 
-	async checkAllSchedules() {
+	async checkMonthSchedules(month) {
 
 		try {
-			// Pega a data atual e adiciona mais 1 dia
-			const date = new Date(new Date().setUTCDate(new Date().getUTCDate() + 1))
+			const { date, lastDayOfMonth } = new ThisMonth({ month }).lastDayOfMonth()
 
 			const dates = await this.prisma.schedule.findMany({
 				where: {
-					date: { gt: date.toISOString() },
+					AND: [
+						{
+							date: {
+								gte: date.toISOString(),
+							},
+						},
+						{
+							date: {
+								lte: lastDayOfMonth.toISOString()
+							}
+						}
+					],
 					isActive: true
 				},
 				select: { date: true, id: true }
@@ -40,11 +51,22 @@ class ScheduleService {
 
 		try {
 
-			await this.prisma.schedule.create({
-				data: { date, company_id, isActive, frequency }
+			const count = await this.prisma.schedule.count({
+				where: {
+					date,
+					isActive: true
+				}
 			})
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: data, message: 'Confirme seu agendamento' })
+			if (count !== 0) {
+				return new DefaultHTTPReturn({ error: true, message: 'Horário indisponível', statusCode: 400 })
+			}
+
+			await this.prisma.schedule.create({
+				data: { date, company_id, isActive, frequency },
+			})
+
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Confirme seu agendamento' })
 		} catch {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
 		}
@@ -70,18 +92,21 @@ class ScheduleService {
 
 			const count = await this.prisma.schedule.count({
 				where: {
-					date: { in: dataArray }
+					date: { in: dataArray.date },
+					isActive: true
 				}
 			})
 
-			console.log(count)
+			if (count !== 0) {
+				return new DefaultHTTPReturn({ error: true, message: 'Horário indisponível', statusCode: 400 })
+			}
 
 			// Cria vários agendamentos baseado no resultado indicado pelo 'DateScheduler'
 			await this.prisma.schedule.createMany({
 				data: dataArray
 			})
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: data, message: 'Confirme seu agendamento' })
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Confirme seu agendamento' })
 		} catch {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
 		}

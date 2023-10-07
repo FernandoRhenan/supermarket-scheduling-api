@@ -10,8 +10,9 @@ class ScheduleRoutes extends GrandRoute {
 
 	initializeRoutes() {
 
-		this.router.get('/check-all-schedules', async (req, res) => {
-			const data = await scheduleController.checkAllSchedules()
+		this.router.get('/check-month-schedules/:month', async (req, res) => {
+
+			const data = await scheduleController.checkMonthSchedules(req.params.month)
 			res.status(data.statusCode).json(data)
 		})
 
