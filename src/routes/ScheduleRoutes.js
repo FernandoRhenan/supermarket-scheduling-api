@@ -10,9 +10,9 @@ class ScheduleRoutes extends GrandRoute {
 
 	initializeRoutes() {
 
-		this.router.get('/check-month-schedules/:month', async (req, res) => {
+		this.router.get('/check-all-schedules', verifyToken, async (req, res) => {
 
-			const data = await scheduleController.checkMonthSchedules(req.params.month)
+			const data = await scheduleController.checkAllSchedules()
 			res.status(data.statusCode).json(data)
 		})
 
@@ -22,8 +22,8 @@ class ScheduleRoutes extends GrandRoute {
 			res.status(data.statusCode).json(data)
 		})
 
-		this.router.patch('/confirm-schedule', verifyToken, async (req, res) => {
-			const data = await scheduleController.confirmSchedule(req.body.schedule)
+		this.router.patch('/cancel-schedule', verifyToken, async (req, res) => {
+			const data = await scheduleController.cancelSchedule(req.body.schedule)
 			res.status(data.statusCode).json(data)
 		})
 

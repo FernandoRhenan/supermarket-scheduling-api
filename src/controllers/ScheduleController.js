@@ -4,18 +4,18 @@ import scheduleService from '../services/ScheduleService.js'
 
 class ScheduleController {
 
-	async checkMonthSchedules(month) {
+	async checkAllSchedules() {
 
-		const data = await scheduleService.checkMonthSchedules(month)
+		const data = await scheduleService.checkAllSchedules()
 		return data
 
 	}
 
 	async createSchedule(body) {
 
-		const { date, company_id, frequency, isActive } = body
+		const { date, company_id, frequency } = body
 
-		const schedule = new ScheduleEntity({ date, company_id, frequency, isActive })
+		const schedule = new ScheduleEntity({ date, company_id, frequency })
 		const { error, message } = schedule.validateAll()
 		if (error) {
 			return new DefaultHTTPReturn({ statusCode: 400, message, error })
@@ -23,16 +23,16 @@ class ScheduleController {
 
 		// Se for um agendamento unico, é chamado o service 'createSchedule', se não, é chamado o 'createSchedules'
 		if (frequency === 'once') {
-			const data = await scheduleService.createSchedule(body)
+			const data = await scheduleService.createSchedule({ ...body, isActive: true })
 			return data
 		} else {
-			const data = await scheduleService.createSchedules(body)
+			const data = await scheduleService.createSchedules({ ...body, isActive: true })
 			return data
 		}
 
 	}
 
-	async confirmSchedule(schedules) {
+	async cancelSchedule(schedules) {
 
 		if (typeof schedules !== 'object') {
 			return new DefaultHTTPReturn({ statusCode: 400, message: 'Identificador inválido', error: true })
@@ -45,14 +45,14 @@ class ScheduleController {
 				}
 			})
 
-			const data = await scheduleService.confirmSchedules(schedules)
+			const data = await scheduleService.cancelSchedules(schedules)
 			return data
 
 		} else if (schedules.length == 1) {
 			if (typeof schedules[0] !== 'number') {
 				return new DefaultHTTPReturn({ statusCode: 400, message: 'Identificador inválido', error: true })
 			}
-			const data = await scheduleService.confirmSchedule(schedules[0])
+			const data = await scheduleService.cancelSchedule(schedules[0])
 			return data
 
 		} else {

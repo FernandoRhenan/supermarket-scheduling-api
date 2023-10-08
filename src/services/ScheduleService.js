@@ -5,30 +5,29 @@ import { PrismaClient } from '@prisma/client'
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
-import DateScheduler from '../utils/date/DateScheduler.js';
-import ThisMonth from '../utils/date/ThisMonth.js';
+import ScheduleEntity from '../entities/ScheduleEntity.js';
 
 class ScheduleService {
 	constructor() {
 		this.prisma = new PrismaClient();
 	}
 
-	async checkMonthSchedules(month) {
+	async checkAllSchedules() {
 
 		try {
-			const { date, lastDayOfMonth } = new ThisMonth({ month }).lastDayOfMonth()
+			const { minRange, maxRange } = new ScheduleEntity({ monthRange: 2 }).monthRange()
 
 			const dates = await this.prisma.schedule.findMany({
 				where: {
 					AND: [
 						{
 							date: {
-								gte: date.toISOString(),
+								gte: minRange.toISOString(),
 							},
 						},
 						{
 							date: {
-								lte: lastDayOfMonth.toISOString()
+								lte: maxRange.toISOString()
 							}
 						}
 					],
@@ -66,7 +65,7 @@ class ScheduleService {
 				data: { date, company_id, isActive, frequency },
 			})
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Confirme seu agendamento' })
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Agendamento criado' })
 		} catch {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
 		}
@@ -78,7 +77,7 @@ class ScheduleService {
 		const { date, company_id, frequency, isActive } = schedule
 
 		// Classe que gera os seguintes agendamentos baseado nos parâmentros
-		const { data, error, message } = new DateScheduler({ date, frequency, monthRange: 2 }).calcSchedules()
+		const { data, error, message } = new ScheduleEntity({ date, frequency, monthRange: 2 }).calcSchedules()
 
 		if (error) {
 			return new DefaultHTTPReturn({ error: true, statusCode: 400, message })
@@ -86,13 +85,14 @@ class ScheduleService {
 
 		try {
 			const dataArray = []
+			const dateArray = []
 			data.forEach((item) => {
+				dateArray.push(item.date)
 				dataArray.push({ date: item.date, company_id, isActive, frequency })
 			});
-
 			const count = await this.prisma.schedule.count({
 				where: {
-					date: { in: dataArray.date },
+					date: { in: dateArray },
 					isActive: true
 				}
 			})
@@ -106,23 +106,23 @@ class ScheduleService {
 				data: dataArray
 			})
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Confirme seu agendamento' })
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Agendamento criado' })
 		} catch {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
 		}
 
 	}
 
-	async confirmSchedule(schedule) {
+	async cancelSchedule(schedule) {
 
 		try {
 
 			await this.prisma.schedule.update({
 				where: { id: schedule },
-				data: { isActive: true }
+				data: { isActive: false }
 			})
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Agendamento confirmado' })
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Agendamento cancelado' })
 
 		} catch {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
@@ -130,16 +130,16 @@ class ScheduleService {
 
 	}
 
-	async confirmSchedules(schedules) {
+	async cancelSchedules(schedules) {
 
 		try {
 
 			await this.prisma.schedule.updateMany({
-				data: { isActive: true },
+				data: { isActive: false },
 				where: { id: { in: schedules } }
 			})
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Agendamento confirmado' })
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Agendamento cancelado' })
 
 		} catch {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })

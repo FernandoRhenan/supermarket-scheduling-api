@@ -1,4 +1,4 @@
-import 'dotenv/config.js'
+import 'dotenv/config'
 import axios from 'axios'
 import DefaultHTTPReturn from '../utils/returnTypes/DefaultHTTPReturn.js'
 import { PrismaClient } from '@prisma/client'

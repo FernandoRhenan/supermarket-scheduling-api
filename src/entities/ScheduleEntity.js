@@ -1,13 +1,16 @@
 import DefaultValidationReturn from "../utils/returnTypes/DefaultValidationReturn.js"
+import DefaultInternalReturn from '../utils/returnTypes/DefaultInternalReturn.js'
 
 class ScheduleEntity {
 	constructor({
+		monthRange,
 		company_id = null,
 		date = '',
 		frequency = 'once',
-		isActive = false
+		isActive = true
 	}) {
 		this._date = date
+		this._monthRange = monthRange
 		this._company_id = company_id
 		this._frequency = frequency
 		this._isActive = isActive
@@ -60,7 +63,7 @@ class ScheduleEntity {
 		const minRange = new Date(dateNow.setUTCDate(dateNow.getUTCDate() + 1))
 		const scheduleDate = new Date(this._date)
 		// retorna uma nova data 2 meses depois da minRange
-		const maxRange = new Date(new Date(minRange).setUTCMonth(minRange.getUTCMonth() + 1))
+		const maxRange = new Date(new Date(minRange).setUTCMonth(minRange.getUTCMonth() + this._monthRange))
 
 		if (scheduleDate < minRange) {
 			return new DefaultValidationReturn({ message: 'Data de agendamento restringida', error: true })
@@ -80,6 +83,63 @@ class ScheduleEntity {
 		} else {
 			return new DefaultValidationReturn({ message: 'Identificador inválido', error: true })
 		}
+	}
+
+	calcSchedules() {
+
+		const baseDate = new Date(this._date);
+		const maxDate = new Date(new Date(this._date).setUTCMonth(baseDate.getUTCMonth() + this._monthRange));
+
+		const dates = [];
+		switch (this._frequency) {
+
+			case 'weekly':
+
+				while (baseDate < maxDate) {
+					dates.push({ date: new Date(baseDate) })
+
+					baseDate.setUTCDate(baseDate.getUTCDate() + 7);
+				}
+
+				return new DefaultInternalReturn({ error: false, data: dates })
+
+
+			case 'biweekly':
+
+				while (baseDate < maxDate) {
+					dates.push({ date: new Date(baseDate) })
+
+					baseDate.setUTCDate(baseDate.getUTCDate() + 14);
+				}
+
+				return new DefaultInternalReturn({ error: false, data: dates })
+
+			case 'monthly':
+
+
+				while (baseDate < maxDate) {
+					dates.push({ date: new Date(baseDate) })
+
+					baseDate.setUTCDate(baseDate.getUTCDate() + 28);
+				}
+
+				return new DefaultInternalReturn({ error: false, data: dates })
+
+			default:
+				return new DefaultInternalReturn({ error: true, message: 'Periodicidade não permitida' })
+
+		}
+
+	}
+
+	monthRange() {
+
+		const minRange = new Date(new Date().setUTCDate(new Date().getUTCDate() + 1))
+
+		const maxRange = new Date(new Date(minRange).setUTCMonth(minRange.getUTCMonth() + this._monthRange))
+
+		return { minRange, maxRange }
+
 	}
 
 }
