@@ -41,7 +41,6 @@ class ScheduleService {
 		} catch {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
 		}
-
 	}
 
 	async createSchedule(schedule) {
@@ -69,7 +68,6 @@ class ScheduleService {
 		} catch {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
 		}
-
 	}
 
 	async createSchedules(schedule) {
@@ -110,7 +108,6 @@ class ScheduleService {
 		} catch {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
 		}
-
 	}
 
 	async cancelSchedule(schedule) {
@@ -127,7 +124,6 @@ class ScheduleService {
 		} catch {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
 		}
-
 	}
 
 	async cancelSchedules(schedules) {
@@ -147,6 +143,24 @@ class ScheduleService {
 
 	}
 
+	async getCompanySchedule(company_id) {
+
+		try {
+
+			const data = await this.prisma.schedule.findMany({
+				where: {
+					company_id
+				},
+				select: { isActive: true, date: true, frequency: true, id: true, company_id: true }
+			})
+
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, data })
+
+		} catch {
+			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
+		}
+	}
 }
+
 
 export default new ScheduleService();

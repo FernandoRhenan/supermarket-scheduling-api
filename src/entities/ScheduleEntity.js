@@ -3,7 +3,7 @@ import DefaultInternalReturn from '../utils/returnTypes/DefaultInternalReturn.js
 
 class ScheduleEntity {
 	constructor({
-		monthRange,
+		monthRange = 2,
 		company_id = null,
 		date = '',
 		frequency = 'once',
@@ -19,7 +19,6 @@ class ScheduleEntity {
 	validateAll() {
 
 		const date = this.validateDate()
-		const companyId = this.validateCompanyId()
 		const frequency = this.validateFrequency()
 
 
@@ -74,15 +73,6 @@ class ScheduleEntity {
 
 		return new DefaultValidationReturn({ message: '', error: false })
 
-	}
-
-	validateCompanyId() {
-
-		if (typeof this._company_id === 'number') {
-			return new DefaultValidationReturn({ message: '', error: false })
-		} else {
-			return new DefaultValidationReturn({ message: 'Identificador inválido', error: true })
-		}
 	}
 
 	calcSchedules() {

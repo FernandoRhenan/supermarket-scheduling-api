@@ -1,6 +1,7 @@
 import ScheduleEntity from '../entities/ScheduleEntity.js'
 import DefaultHTTPReturn from '../utils/returnTypes/DefaultHTTPReturn.js'
 import scheduleService from '../services/ScheduleService.js'
+import CompareData from '../utils/CompareData.js'
 
 class ScheduleController {
 
@@ -15,10 +16,12 @@ class ScheduleController {
 
 		const { date, company_id, frequency } = body
 
-		const schedule = new ScheduleEntity({ date, company_id, frequency })
-		const { error, message } = schedule.validateAll()
-		if (error) {
-			return new DefaultHTTPReturn({ statusCode: 400, message, error })
+		const { error, message } = new ScheduleEntity({ date, frequency, monthRange: 2 }).validateAll()
+
+		const { error: error2, message: message2 } = new CompareData({ value1: company_id, type: 'number' }).compareOneType()
+
+		if (error || error2) {
+			return new DefaultHTTPReturn({ statusCode: 400, message: message || message2, error: error || error2 })
 		}
 
 		// Se for um agendamento unico, é chamado o service 'createSchedule', se não, é chamado o 'createSchedules'
@@ -34,14 +37,19 @@ class ScheduleController {
 
 	async cancelSchedule(schedules) {
 
-		if (typeof schedules !== 'object') {
-			return new DefaultHTTPReturn({ statusCode: 400, message: 'Identificador inválido', error: true })
+		const { error, message } = new CompareData({ value1: schedules, type: 'object' }).compareOneType()
+
+		if (error) {
+			return new DefaultHTTPReturn({ statusCode: 400, message, error })
 		}
+
 
 		if (schedules.length > 1) {
 			schedules.forEach((item) => {
-				if (typeof item !== 'number') {
-					return new DefaultHTTPReturn({ statusCode: 400, message: 'Identificador inválido', error: true })
+				const { error, message } = new CompareData({ value1: item, type: 'number' }).compareOneType()
+
+				if (error) {
+					return new DefaultHTTPReturn({ statusCode: 400, message, error })
 				}
 			})
 
@@ -49,9 +57,13 @@ class ScheduleController {
 			return data
 
 		} else if (schedules.length == 1) {
-			if (typeof schedules[0] !== 'number') {
-				return new DefaultHTTPReturn({ statusCode: 400, message: 'Identificador inválido', error: true })
+
+			const { error, message } = new CompareData({ value1: schedules[0], type: 'number' }).compareOneType()
+
+			if (error) {
+				return new DefaultHTTPReturn({ statusCode: 400, message, error })
 			}
+
 			const data = await scheduleService.cancelSchedule(schedules[0])
 			return data
 
@@ -60,6 +72,20 @@ class ScheduleController {
 		}
 
 	}
+
+	async getCompanySchedule(company_id1, company_id2) {
+
+		const { error, message } = new CompareData({ data1: company_id1, data2: company_id2, type: 'number' }).compareTwoStrict()
+
+		if (error) {
+			return new DefaultHTTPReturn({ statusCode: 400, message, error })
+		}
+
+		const data = await scheduleService.getCompanySchedule(company_id1)
+		return data
+
+	}
+
 
 }
 
