@@ -4,14 +4,12 @@ import DefaultInternalReturn from '../utils/returnTypes/DefaultInternalReturn.js
 class ScheduleEntity {
 	constructor({
 		monthRange = 2,
-		company_id = null,
 		date = '',
 		frequency = 'once',
 		isActive = true
 	}) {
 		this._date = date
 		this._monthRange = monthRange
-		this._company_id = company_id
 		this._frequency = frequency
 		this._isActive = isActive
 	}
@@ -22,11 +20,11 @@ class ScheduleEntity {
 		const frequency = this.validateFrequency()
 
 
-		if (date.error || companyId.error || frequency.error) {
+		if (date.error || frequency.error) {
 
 			let invalidArray = []
 
-			const array = [companyId, date, frequency]
+			const array = [date, frequency]
 
 			array.forEach((item) => {
 				if (item.error) {

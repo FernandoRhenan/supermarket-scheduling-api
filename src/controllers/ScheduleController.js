@@ -75,7 +75,7 @@ class ScheduleController {
 
 	async getCompanySchedule(company_id1, company_id2) {
 
-		const { error, message } = new CompareData({ data1: company_id1, data2: company_id2, type: 'number' }).compareTwoStrict()
+		const { error, message } = new CompareData({ value1: company_id1, value2: company_id2, type: 'number' }).compareTwoStrict()
 
 		if (error) {
 			return new DefaultHTTPReturn({ statusCode: 400, message, error })

@@ -29,7 +29,7 @@ class CompanyRoutes extends GrandRoute {
 			res.status(data.statusCode).json(data)
 		})
 
-		this.router.post('/confirm-email', async (req, res) => {
+		this.router.patch('/confirm-email', async (req, res) => {
 			const { token } = req.body
 			const data = await companyController.confirmEmail(token)
 			res.status(data.statusCode).json(data)

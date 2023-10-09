@@ -25,6 +25,7 @@ class CompareData {
 	}
 
 	compareTwoStrict() {
+
 		if (this._value1 === this._value2 && typeof this._value1 === this._type) {
 			return new DefaultValidationReturn({ message: '', error: false })
 		} else {
