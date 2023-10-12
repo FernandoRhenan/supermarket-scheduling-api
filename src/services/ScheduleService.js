@@ -36,10 +36,10 @@ class ScheduleService {
 				select: { date: true, id: true }
 			})
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: { dates } })
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: { dates }, state: 'success' })
 
 		} catch {
-			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
+			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
 		}
 	}
 
@@ -57,16 +57,16 @@ class ScheduleService {
 			})
 
 			if (count !== 0) {
-				return new DefaultHTTPReturn({ error: true, message: 'Horário indisponível', statusCode: 400 })
+				return new DefaultHTTPReturn({ error: true, message: 'Horário indisponível', statusCode: 400, state: 'error' })
 			}
 
 			await this.prisma.schedule.create({
 				data: { date, company_id, isActive, frequency },
 			})
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Agendamento criado' })
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Agendamento criado', state: 'success' })
 		} catch {
-			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
+			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
 		}
 	}
 
@@ -78,7 +78,7 @@ class ScheduleService {
 		const { data, error, message } = new ScheduleEntity({ date, frequency, monthRange: 2 }).calcSchedules()
 
 		if (error) {
-			return new DefaultHTTPReturn({ error: true, statusCode: 400, message })
+			return new DefaultHTTPReturn({ error: true, statusCode: 400, message, state: 'error' })
 		}
 
 		try {
@@ -96,7 +96,7 @@ class ScheduleService {
 			})
 
 			if (count !== 0) {
-				return new DefaultHTTPReturn({ error: true, message: 'Horário indisponível', statusCode: 400 })
+				return new DefaultHTTPReturn({ error: true, message: 'Horário indisponível', statusCode: 400, state: 'error' })
 			}
 
 			// Cria vários agendamentos baseado no resultado indicado pelo 'DateScheduler'
@@ -104,9 +104,9 @@ class ScheduleService {
 				data: dataArray
 			})
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Agendamento criado' })
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Agendamento criado', state: 'success' })
 		} catch {
-			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
+			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
 		}
 	}
 
@@ -119,10 +119,10 @@ class ScheduleService {
 				data: { isActive: false }
 			})
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Agendamento cancelado' })
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Agendamento cancelado', state: 'success' })
 
 		} catch {
-			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
+			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
 		}
 	}
 
@@ -135,10 +135,10 @@ class ScheduleService {
 				where: { id: { in: schedules } }
 			})
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Agendamento cancelado' })
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Agendamento cancelado', state: 'success' })
 
 		} catch {
-			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
+			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
 		}
 
 	}
@@ -154,10 +154,10 @@ class ScheduleService {
 				select: { isActive: true, date: true, frequency: true, id: true, company_id: true }
 			})
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, data })
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, data, state: 'success' })
 
 		} catch {
-			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
+			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
 		}
 	}
 }

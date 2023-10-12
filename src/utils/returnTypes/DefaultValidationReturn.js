@@ -1,6 +1,6 @@
 class DefaultValidationReturn {
-	constructor({ message = '', error = false }) {
-		return { message, error }
+	constructor({ message = '', error = false, state = 'error' }) {
+		return { message, error, state }
 	}
 }
 

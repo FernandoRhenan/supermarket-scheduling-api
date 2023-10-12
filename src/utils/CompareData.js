@@ -10,34 +10,34 @@ class CompareData {
 	compareTwoTypes() {
 
 		if (typeof this._value1 === this._type && typeof this._value2 === this._type) {
-			return new DefaultValidationReturn({ message: '', error: false })
+			return new DefaultValidationReturn({ message: '', error: false, state: 'success' })
 		} else {
-			return new DefaultValidationReturn({ message: 'Os dados enviados são inválidos', error: true })
+			return new DefaultValidationReturn({ message: 'Os dados enviados são inválidos', error: true, state: 'error' })
 		}
 	}
 
 	compareTwoValues() {
 		if (this._value1 == this._value2) {
-			return new DefaultValidationReturn({ message: '', error: false })
+			return new DefaultValidationReturn({ message: '', error: false, state: 'success' })
 		} else {
-			return new DefaultValidationReturn({ message: 'Os dados enviados são inválidos', error: true })
+			return new DefaultValidationReturn({ message: 'Os dados enviados são inválidos', error: true, state: 'error' })
 		}
 	}
 
 	compareTwoStrict() {
 
 		if (this._value1 === this._value2 && typeof this._value1 === this._type) {
-			return new DefaultValidationReturn({ message: '', error: false })
+			return new DefaultValidationReturn({ message: '', error: false, state: 'success' })
 		} else {
-			return new DefaultValidationReturn({ message: 'Os dados enviados são inválidos', error: true })
+			return new DefaultValidationReturn({ message: 'Os dados enviados são inválidos', error: true, state: 'error' })
 		}
 	}
 
 	compareOneType() {
 		if (typeof this._value1 === this._type) {
-			return new DefaultValidationReturn({ message: '', error: false })
+			return new DefaultValidationReturn({ message: '', error: false, state: 'success' })
 		} else {
-			return new DefaultValidationReturn({ message: 'Os dados enviados são inválidos', error: true })
+			return new DefaultValidationReturn({ message: 'Os dados enviados são inválidos', error: true, state: 'error' })
 		}
 	}
 

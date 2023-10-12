@@ -17,7 +17,7 @@ class CompanyService {
 
 			switch (data.status) {
 				case 'ERROR':
-					return new DefaultHTTPReturn({ error: true, message: data.message, statusCode: 400 })
+					return new DefaultHTTPReturn({ error: true, message: data.message, statusCode: 400, state: 'error' })
 				case 'OK':
 					const optimizedData = {
 						name: data.nome,
@@ -25,13 +25,13 @@ class CompanyService {
 						phone: data.telefone,
 						cnpj: data.cnpj
 					}
-					return new DefaultHTTPReturn({ error: false, statusCode: 200, data: optimizedData })
+					return new DefaultHTTPReturn({ error: false, statusCode: 200, data: optimizedData, state: 'success' })
 				default:
-					return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
+					return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
 			}
 
 		} catch {
-			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
+			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
 		}
 	}
 
@@ -43,7 +43,7 @@ class CompanyService {
 			const emailCount = await this.prisma.company.count({ where: { email: _email } })
 
 			if (emailCount !== 0) {
-				return new DefaultHTTPReturn({ error: false, statusCode: 400, message: 'E-mail já cadastrado' })
+				return new DefaultHTTPReturn({ error: false, statusCode: 400, message: 'E-mail já cadastrado', state: 'error' })
 			}
 
 			const savedCompany = await this.prisma.company.create({
@@ -61,10 +61,10 @@ class CompanyService {
 				select: { email: true, id: true }
 			})
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: savedCompany })
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: savedCompany, state: 'success' })
 
 		} catch {
-			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
+			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
 
 		}
 	}
@@ -85,7 +85,7 @@ class CompanyService {
 				},
 			});
 
-			const info = await transporter.sendMail({
+			await transporter.sendMail({
 				from: process.env.EMAIL_SENDER, // sender address
 				to: email, // list of receivers
 				subject: "Hello ✔", // Subject line
@@ -94,10 +94,10 @@ class CompanyService {
 			});
 
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: `Seu e-mail de confirmação foi enviado para ${email}` })
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: `Seu e-mail de confirmação foi enviado para ${email}`, state: 'success' })
 
 		} catch {
-			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
+			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
 
 		}
 	}
@@ -115,10 +115,10 @@ class CompanyService {
 
 			const token = jwt.sign({ companyId: company.id, isAdmin: false }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Sua conta foi confirmada', data: { token } })
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Sua conta foi confirmada', data: { token }, state: 'success' })
 
 		} catch {
-			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500 })
+			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
 
 		}
 	}
@@ -136,20 +136,20 @@ class CompanyService {
 			if (company.password) {
 				const unhashedPass = await bcrypt.compare(password, company.password)
 				if (!unhashedPass) {
-					return new DefaultHTTPReturn({ statusCode: 400, message: 'Credenciais inválidas', error: true })
+					return new DefaultHTTPReturn({ statusCode: 400, message: 'Credenciais inválidas', error: true, state: 'error' })
 				}
 			}
 			if (!company.confirmedAccount) {
-				return new DefaultHTTPReturn({ statusCode: 401, message: 'Sua conta ainda não foi confirmada', error: true })
+				return new DefaultHTTPReturn({ statusCode: 401, message: 'Sua conta ainda não foi confirmada', error: true, state: 'error' })
 			}
 
 			const token = jwt.sign({ companyId: company.id, isAdmin: company.isAdmin }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: { token } })
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: { token }, state: 'success' })
 
 
 		} catch {
-			return new DefaultHTTPReturn({ error: true, statusCode: 500, message: 'Ocorreu um erro, por favor, tente novamente mais tarde' })
+			return new DefaultHTTPReturn({ error: true, statusCode: 500, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', state: 'error' })
 
 		}
 

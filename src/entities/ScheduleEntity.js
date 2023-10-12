@@ -32,18 +32,18 @@ class ScheduleEntity {
 				}
 			})
 
-			return new DefaultValidationReturn({ message: invalidArray, error: true })
+			return new DefaultValidationReturn({ message: invalidArray, error: true, state: 'warning' })
 		} else {
-			return new DefaultValidationReturn({ message: '', error: false })
+			return new DefaultValidationReturn({ message: '', error: false, state: 'success' })
 		}
 
 	}
 
 	validateFrequency() {
 		if (this._frequency == 'once' || this._frequency == 'weekly' || this._frequency == 'biweekly' || this._frequency == 'monthly') {
-			return new DefaultValidationReturn({ message: '', error: false })
+			return new DefaultValidationReturn({ message: '', error: false, state: 'success' })
 		} else {
-			return new DefaultValidationReturn({ message: 'Periodicidade não permitida', error: true })
+			return new DefaultValidationReturn({ message: 'Periodicidade não permitida', error: true, state: 'warning' })
 		}
 
 	}
@@ -53,7 +53,7 @@ class ScheduleEntity {
 		// Garante o padrão ISO8601, para salvar datas no banco de dados
 		const dateRegex = /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{3}Z$/.test(this._date)
 		if (!dateRegex) {
-			return new DefaultValidationReturn({ message: 'Há algum erro de formatação na data', error: true })
+			return new DefaultValidationReturn({ message: 'Há algum erro de formatação na data', error: true, state: 'warning' })
 		}
 		const dateNow = new Date()
 
@@ -63,13 +63,13 @@ class ScheduleEntity {
 		const maxRange = new Date(new Date(minRange).setUTCMonth(minRange.getUTCMonth() + this._monthRange))
 
 		if (scheduleDate < minRange) {
-			return new DefaultValidationReturn({ message: 'Data de agendamento restringida', error: true })
+			return new DefaultValidationReturn({ message: 'Data de agendamento restringida', error: true, state: 'warning' })
 		}
 		if (scheduleDate > maxRange) {
-			return new DefaultValidationReturn({ message: 'Data de agendamento excedida', error: true })
+			return new DefaultValidationReturn({ message: 'Data de agendamento excedida', error: true, state: 'warning' })
 		}
 
-		return new DefaultValidationReturn({ message: '', error: false })
+		return new DefaultValidationReturn({ message: '', error: false, state: 'success' })
 
 	}
 
@@ -89,7 +89,7 @@ class ScheduleEntity {
 					baseDate.setUTCDate(baseDate.getUTCDate() + 7);
 				}
 
-				return new DefaultInternalReturn({ error: false, data: dates })
+				return new DefaultInternalReturn({ error: false, data: dates, state: 'success' })
 
 
 			case 'biweekly':
@@ -100,7 +100,7 @@ class ScheduleEntity {
 					baseDate.setUTCDate(baseDate.getUTCDate() + 14);
 				}
 
-				return new DefaultInternalReturn({ error: false, data: dates })
+				return new DefaultInternalReturn({ error: false, data: dates, state: 'success' })
 
 			case 'monthly':
 
@@ -111,10 +111,10 @@ class ScheduleEntity {
 					baseDate.setUTCDate(baseDate.getUTCDate() + 28);
 				}
 
-				return new DefaultInternalReturn({ error: false, data: dates })
+				return new DefaultInternalReturn({ error: false, data: dates, state: 'success' })
 
 			default:
-				return new DefaultInternalReturn({ error: true, message: 'Periodicidade não permitida' })
+				return new DefaultInternalReturn({ error: true, message: 'Periodicidade não permitida', state: 'warning' })
 
 		}
 
@@ -126,7 +126,7 @@ class ScheduleEntity {
 
 		const maxRange = new Date(new Date(minRange).setUTCMonth(minRange.getUTCMonth() + this._monthRange))
 
-		return { minRange, maxRange }
+		return new DefaultInternalReturn({ error: true, message: '', state: 'success', data: { minRange, maxRange } })
 
 	}
 
