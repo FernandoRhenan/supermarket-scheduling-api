@@ -114,10 +114,8 @@ class CompanyEntity {
 
 		if (this._cnpj.length === 0) {
 			return new DefaultValidationReturn({ message: 'Preencha o campo CNPJ', error: true, state: 'warning' })
-		} else if (this._cnpj.length > 14) {
-			return new DefaultValidationReturn({ message: 'O CNPJ informado tem mais que 14 números', error: true, state: 'warning' })
-		} else if (this._cnpj.length < 14) {
-			return new DefaultValidationReturn({ message: 'O CNPJ informado tem menos que 14 números', error: true, state: 'warning' })
+		} else if (this._cnpj.length !== 14) {
+			return new DefaultValidationReturn({ message: 'O CNPJ deve conter 14 números', error: true, state: 'warning' })
 		} else if (!cnpjRegex) {
 			return new DefaultValidationReturn({ message: 'O campo CNPJ aceita apenas números', error: true, state: 'warning' })
 		} else {
@@ -126,14 +124,14 @@ class CompanyEntity {
 	}
 
 	validatePhone() {
-		const phoneRegex = /^[0-9]{11}$/.test(this._phone)
+		const phoneRegex = /^[0-9]+$/.test(this._phone)
 
 		if (this._phone.length === 0) {
 			return new DefaultValidationReturn({ message: 'Preencha o campo telefone', error: true, state: 'warning' })
 		} else if (this._phone.length > 11) {
-			return new DefaultValidationReturn({ message: 'O telefone informado tem mais que 11 números', error: true, state: 'warning' })
+			return new DefaultValidationReturn({ message: 'O telefone não pode conter mais que 11 números', error: true, state: 'warning' })
 		} else if (this._phone.length < 10) {
-			return new DefaultValidationReturn({ message: 'O telefone informado tem menos que 10 números', error: true, state: 'warning' })
+			return new DefaultValidationReturn({ message: 'O telefone deve conter pelo menos 10 números', error: true, state: 'warning' })
 		} else if (!phoneRegex) {
 			return new DefaultValidationReturn({ message: 'O campo telefone aceita apenas números', error: true, state: 'warning' })
 		} else {
@@ -142,14 +140,14 @@ class CompanyEntity {
 	}
 
 	validateAltPhone() {
-		const altPhoneRegex = /^[0-9]{11}$/.test(this._altPhone)
+		const altPhoneRegex = /^[0-9]+$/.test(this._altPhone)
 
 		if (this._altPhone.length === 0) {
 			return new DefaultValidationReturn({ message: 'Preencha o campo telefone secundário', error: true, state: 'warning' })
 		} else if (this._altPhone.length > 11) {
-			return new DefaultValidationReturn({ message: 'O telefone secundário informado tem mais que 11 números', error: true, state: 'warning' })
+			return new DefaultValidationReturn({ message: 'O telefone secundário não pode conter mais que 11 números', error: true, state: 'warning' })
 		} else if (this._altPhone.length < 10) {
-			return new DefaultValidationReturn({ message: 'O telefone secundário informado tem menos que 10 números', error: true, state: 'warning' })
+			return new DefaultValidationReturn({ message: 'O telefone secundário deve conter pelo menos 10 números', error: true, state: 'warning' })
 		} else if (!altPhoneRegex) {
 			return new DefaultValidationReturn({ message: 'O campo telefone secundário aceita apenas números', error: true, state: 'warning' })
 		} else {

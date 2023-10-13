@@ -39,11 +39,21 @@ class CompanyService {
 
 		const { _name, _email, _cnpj, _corporateName, _phone, _altPhone, _password, _confirmedAccount, _isAdmin } = company
 		try {
+			const companyCount = await this.prisma.company.count({
+				where: {
+					OR: [
+						{
+							cnpj: _cnpj
+						},
+						{
+							email: _email
+						},
+					],
+				},
+			})
 
-			const emailCount = await this.prisma.company.count({ where: { email: _email } })
-
-			if (emailCount !== 0) {
-				return new DefaultHTTPReturn({ error: false, statusCode: 400, message: 'E-mail já cadastrado', state: 'error' })
+			if (companyCount !== 0) {
+				return new DefaultHTTPReturn({ error: true, statusCode: 400, message: 'Empresa já cadastrada', state: 'error' })
 			}
 
 			const savedCompany = await this.prisma.company.create({
