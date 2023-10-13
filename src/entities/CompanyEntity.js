@@ -65,7 +65,9 @@ class CompanyEntity {
 		const passwordRegex = /^[a-zA-Z0-9!@#$%&*()\s]{6,32}$/.test(this._password)
 		// OBS: passwordRegex está permitindo espaços em branco " ".
 
-		if (this._password.length < 6) {
+		if (this._password.length === 0) {
+			return new DefaultValidationReturn({ message: 'Preencha o campo senha', error: true, state: 'warning' })
+		} else if (this._password.length < 6) {
 			return new DefaultValidationReturn({ message: 'A senha deve conter pelo menos 6 caracteres', error: true, state: 'warning' })
 		} else if (this._password.length > 32) {
 			return new DefaultValidationReturn({ message: 'A senha não pode conter mais que 32 caracteres', error: true, state: 'warning' })
@@ -78,8 +80,9 @@ class CompanyEntity {
 
 	validateName() {
 		const nameRegex = /^[a-zA-Z0-9\s]+$/.test(this._name)
-
-		if (this._name.length < 2) {
+		if (this._name.length === 0) {
+			return new DefaultValidationReturn({ message: 'Preecha o campo de nome', error: true, state: 'warning' })
+		} else if (this._name.length < 2) {
 			return new DefaultValidationReturn({ message: 'O nome deve conter pelo menos 2 caracteres', error: true, state: 'warning' })
 		} else if (this._name.length > 26) {
 			return new DefaultValidationReturn({ message: 'O nome não pode conter mais que 26 caracteres', error: true, state: 'warning' })
@@ -92,7 +95,10 @@ class CompanyEntity {
 
 	validateEmail() {
 		const emailRegex = /^[a-zA-Z0-9._-]{2,}@[a-zA-Z0-9.-]{2,}\.[a-zA-Z]{2,4}$/.test(this._email)
-		if (this._email.length < 8) {
+
+		if (this._email.length === 0) {
+			return new DefaultValidationReturn({ message: 'Preencha o campo E-mail', error: true, state: 'warning' })
+		} else if (this._email.length < 8) {
 			return new DefaultValidationReturn({ message: 'O email deve conter pelo menos 8 caracteres', error: true, state: 'warning' })
 		} else if (this._email.length > 50) {
 			return new DefaultValidationReturn({ message: 'O email não pode conter mais que 50 caracteres', error: true, state: 'warning' })
@@ -122,10 +128,12 @@ class CompanyEntity {
 	validatePhone() {
 		const phoneRegex = /^[0-9]{11}$/.test(this._phone)
 
-		if (this._phone.length > 11) {
+		if (this._phone.length === 0) {
+			return new DefaultValidationReturn({ message: 'Preencha o campo telefone', error: true, state: 'warning' })
+		} else if (this._phone.length > 11) {
 			return new DefaultValidationReturn({ message: 'O telefone informado tem mais que 11 números', error: true, state: 'warning' })
-		} else if (this._phone.length < 11) {
-			return new DefaultValidationReturn({ message: 'O telefone informado tem menos que 11 números', error: true, state: 'warning' })
+		} else if (this._phone.length < 10) {
+			return new DefaultValidationReturn({ message: 'O telefone informado tem menos que 10 números', error: true, state: 'warning' })
 		} else if (!phoneRegex) {
 			return new DefaultValidationReturn({ message: 'O campo telefone aceita apenas números', error: true, state: 'warning' })
 		} else {
@@ -136,10 +144,12 @@ class CompanyEntity {
 	validateAltPhone() {
 		const altPhoneRegex = /^[0-9]{11}$/.test(this._altPhone)
 
-		if (this._altPhone.length > 11) {
+		if (this._altPhone.length === 0) {
+			return new DefaultValidationReturn({ message: 'Preencha o campo telefone secundário', error: true, state: 'warning' })
+		} else if (this._altPhone.length > 11) {
 			return new DefaultValidationReturn({ message: 'O telefone secundário informado tem mais que 11 números', error: true, state: 'warning' })
-		} else if (this._altPhone.length < 11) {
-			return new DefaultValidationReturn({ message: 'O telefone secundário informado tem menos que 11 números', error: true, state: 'warning' })
+		} else if (this._altPhone.length < 10) {
+			return new DefaultValidationReturn({ message: 'O telefone secundário informado tem menos que 10 números', error: true, state: 'warning' })
 		} else if (!altPhoneRegex) {
 			return new DefaultValidationReturn({ message: 'O campo telefone secundário aceita apenas números', error: true, state: 'warning' })
 		} else {
