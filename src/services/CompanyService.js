@@ -71,7 +71,10 @@ class CompanyService {
 				select: { email: true, id: true }
 			})
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: savedCompany, state: 'success' })
+			const token = jwt.sign({ companyId: savedCompany.id, email: savedCompany.email }, process.env.JWT_SECRET, { expiresIn: '1h' })
+
+
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: token, state: 'success' })
 
 		} catch {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
@@ -79,11 +82,11 @@ class CompanyService {
 		}
 	}
 
-	async sendEmailValidation(credentials) {
-
-		const { email, token } = credentials
+	async sendEmailValidation(token) {
 
 		try {
+			const decoded = jwt.verify(token, process.env.JWT_SECRET)
+			const email = decoded.email
 
 			const transporter = nodemailer.createTransport({
 				host: process.env.EMAIL_HOST,
@@ -104,7 +107,7 @@ class CompanyService {
 			});
 
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: `Seu e-mail de confirmação foi enviado para ${email}`, state: 'success' })
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: `Seu e-mail de confirmação foi enviado para ${email}`, state: 'success', data: email })
 
 		} catch {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })

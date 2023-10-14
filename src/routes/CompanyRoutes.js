@@ -23,9 +23,9 @@ class CompanyRoutes extends GrandRoute {
 		})
 
 		this.router.post('/send-email-validation', async (req, res) => {
-			const credentials = req.body
+			const token = req.body.token
 
-			const data = await companyController.sendEmailValidation(credentials)
+			const data = await companyController.sendEmailValidation(token)
 			res.status(data.statusCode).json(data)
 		})
 

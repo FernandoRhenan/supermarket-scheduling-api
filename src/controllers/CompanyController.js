@@ -38,21 +38,9 @@ class CompanyController {
 
 	}
 
-	async sendEmailValidation(credentials) {
+	async sendEmailValidation(token) {
 
-		const { email, id } = credentials
-
-		const company = new CompanyEntity({ email })
-
-		const { message, error, state } = company.validateEmail()
-
-		if (error) {
-			return new DefaultHTTPReturn({ statusCode: 400, message, error, state })
-		}
-
-		const token = jwt.sign({ email, id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-
-		const data = await companyService.sendEmailValidation({ email, token })
+		const data = await companyService.sendEmailValidation(token)
 		return data
 
 	}
