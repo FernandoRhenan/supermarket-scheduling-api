@@ -1,6 +1,7 @@
 import GrandRoute from './GrandRoute.js'
 import companyController from '../controllers/CompanyController.js'
 import verifyToken from '../middlewares/VerifyJWT.js'
+import jwt from 'jsonwebtoken'
 
 class CompanyRoutes extends GrandRoute {
 	constructor() {
@@ -24,6 +25,7 @@ class CompanyRoutes extends GrandRoute {
 
 		this.router.post('/send-email-validation', async (req, res) => {
 			const token = req.body.token
+			// const token = jwt.sign({ companyId: 2, email: 'fiscal.estadual@magazineluiza.com.br' }, process.env.JWT_SECRET, { expiresIn: '1h' })
 
 			const data = await companyController.sendEmailValidation(token)
 			res.status(data.statusCode).json(data)
@@ -31,6 +33,7 @@ class CompanyRoutes extends GrandRoute {
 
 		this.router.patch('/confirm-email', async (req, res) => {
 			const { token } = req.body
+
 			const data = await companyController.confirmEmail(token)
 			res.status(data.statusCode).json(data)
 		})

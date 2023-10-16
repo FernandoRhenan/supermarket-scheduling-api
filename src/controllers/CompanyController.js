@@ -47,15 +47,8 @@ class CompanyController {
 
 	async confirmEmail(token) {
 
-		try {
-			const { email, id } = jwt.verify(token, process.env.JWT_SECRET);
-
-			const data = await companyService.confirmEmail({ email, id })
-			return data
-
-		} catch {
-			return new DefaultHTTPReturn({ statusCode: 500, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', error: true, state: 'error' })
-		}
+		const data = await companyService.confirmEmail(token)
+		return data
 
 	}
 

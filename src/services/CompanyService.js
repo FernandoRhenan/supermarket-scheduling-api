@@ -51,7 +51,6 @@ class CompanyService {
 					],
 				},
 			})
-
 			if (companyCount !== 0) {
 				return new DefaultHTTPReturn({ error: true, statusCode: 400, message: 'Empresa já cadastrada', state: 'error' })
 			}
@@ -98,40 +97,74 @@ class CompanyService {
 				},
 			});
 
-			await transporter.sendMail({
+			const { accepted, rejected } = await transporter.sendMail({
 				from: process.env.EMAIL_SENDER, // sender address
 				to: email, // list of receivers
 				subject: "Hello ✔", // Subject line
 				text: "Hello world?", // plain text body
-				html: `<b>Hello world? <a href=${process.env.SITE_URL}/email-validation/${token}>Confimar e-mail</a></b>`, // html body
+				html: `<b>Hello world? <a href=${process.env.SITE_URL}/email-validation?token=${token}>Confimar e-mail</a></b>`, // html body
 			});
 
+			if (accepted.length !== 0 && rejected.length === 0) {
+				return new DefaultHTTPReturn({ error: false, statusCode: 200, message: `Seu e-mail de confirmação foi enviado para ${email}`, state: 'success', data: { email } })
+			}
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: `Seu e-mail de confirmação foi enviado para ${email}`, state: 'success', data: email })
 
-		} catch {
-			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
-
+		} catch (err) {
+			switch (err.message) {
+				case 'invalid token':
+					return new DefaultHTTPReturn({ error: true, message: 'O seu token de acesso foi modificado ou manipulado', statusCode: 400, state: 'error' })
+					break
+				case 'invalid signature':
+					return new DefaultHTTPReturn({ error: true, message: 'O seu token de acesso foi modificado ou manipulado', statusCode: 400, state: 'error' })
+					break
+				case 'jwt malformed':
+					return new DefaultHTTPReturn({ error: true, message: 'O seu token de acesso foi modificado ou manipulado', statusCode: 400, state: 'error' })
+					break
+				case 'jwt expired':
+					return new DefaultHTTPReturn({ error: true, message: 'O seu token de acesso expirou', statusCode: 400, state: 'error' })
+					break
+				default:
+					return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
+					break
+			}
 		}
 	}
 
-	async confirmEmail(data) {
+	async confirmEmail(token) {
 
-		const { email, id } = data
 		try {
 
+			const { email, companyId } = jwt.verify(token, process.env.JWT_SECRET);
+
 			const company = await this.prisma.company.update({
-				where: { email, id: Number(id) },
-				data: { confirmedAccount: true },
-				select: { id: true }
+				where: { email, id: Number(companyId) },
+				data: { confirmedAccount: true }
 			})
 
-			const token = jwt.sign({ companyId: company.id, isAdmin: false }, process.env.JWT_SECRET, { expiresIn: '1h' });
+			const newToken = jwt.sign({ companyId: company.id, isAdmin: false }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Sua conta foi confirmada', data: { token }, state: 'success' })
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Sua conta foi confirmada', data: { token: newToken }, state: 'success' })
 
-		} catch {
-			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
+		} catch (err) {
+
+			switch (err.message) {
+				case 'invalid token':
+					return new DefaultHTTPReturn({ error: true, message: 'O seu token de acesso foi modificado ou manipulado', statusCode: 400, state: 'error' })
+					break
+				case 'invalid signature':
+					return new DefaultHTTPReturn({ error: true, message: 'O seu token de acesso foi modificado ou manipulado', statusCode: 400, state: 'error' })
+					break
+				case 'jwt malformed':
+					return new DefaultHTTPReturn({ error: true, message: 'O seu token de acesso foi modificado ou manipulado', statusCode: 400, state: 'error' })
+					break
+				case 'jwt expired':
+					return new DefaultHTTPReturn({ error: true, message: 'O seu token de acesso expirou', statusCode: 400, state: 'error' })
+					break
+				default:
+					return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
+					break
+			}
 
 		}
 	}
@@ -139,12 +172,15 @@ class CompanyService {
 	async login(body) {
 
 		const { cnpj, password } = body
-
 		try {
 			const company = await this.prisma.company.findUnique({
 				where: { cnpj },
-				select: { id: true, password: true, confirmedAccount: true, isAdmin: true }
+				select: { id: true, password: true, confirmedAccount: true, isAdmin: true, email: true }
 			})
+
+			if (!company) {
+				return new DefaultHTTPReturn({ statusCode: 400, message: 'Credenciais inválidas', error: true, state: 'error' })
+			}
 
 			if (company.password) {
 				const unhashedPass = await bcrypt.compare(password, company.password)
@@ -152,8 +188,10 @@ class CompanyService {
 					return new DefaultHTTPReturn({ statusCode: 400, message: 'Credenciais inválidas', error: true, state: 'error' })
 				}
 			}
+
 			if (!company.confirmedAccount) {
-				return new DefaultHTTPReturn({ statusCode: 401, message: 'Sua conta ainda não foi confirmada', error: true, state: 'error' })
+				const token = jwt.sign({ companyId: company.id, email: company.email }, process.env.JWT_SECRET, { expiresIn: '1h' })
+				return new DefaultHTTPReturn({ statusCode: 403, message: 'Sua conta ainda não foi confirmada', error: true, state: 'error', data: { token } })
 			}
 
 			const token = jwt.sign({ companyId: company.id, isAdmin: company.isAdmin }, process.env.JWT_SECRET, { expiresIn: '1h' });
@@ -161,7 +199,8 @@ class CompanyService {
 			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: { token }, state: 'success' })
 
 
-		} catch {
+		} catch (er) {
+			console.log(er)
 			return new DefaultHTTPReturn({ error: true, statusCode: 500, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', state: 'error' })
 
 		}
