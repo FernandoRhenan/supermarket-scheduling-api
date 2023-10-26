@@ -160,6 +160,43 @@ class ScheduleService {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
 		}
 	}
+
+	async checkSchedule(date) {
+
+		const { data: { minRange, maxRange } } = new ScheduleEntity({}).hoursRange(date)
+
+		const newMinRange = new Date(minRange).toISOString()
+		const newMaxRange = new Date(maxRange).toISOString()
+
+		try {
+
+			const dates = await this.prisma.schedule.findMany({
+				where: {
+					AND: [
+						{
+							date: {
+								gte: newMinRange
+							},
+						},
+						{
+							date: {
+								lte: newMaxRange
+							}
+						}
+					],
+					isActive: true
+				},
+				select: { date: true }
+			})
+
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: { dates }, state: 'success' })
+
+		} catch (err) {
+			console.log(err)
+			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
+		}
+	}
+
 }
 
 

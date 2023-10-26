@@ -130,6 +130,17 @@ class ScheduleEntity {
 
 	}
 
+	hoursRange(day) {
+
+		const date = new Date(day)
+		const minRange = new Date(date).setUTCHours(0)
+
+		const maxRange = new Date(date).setUTCHours(23)
+
+		return new DefaultInternalReturn({ error: true, message: '', state: 'success', data: { minRange, maxRange } })
+
+	}
+
 }
 
 export default ScheduleEntity

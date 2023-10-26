@@ -86,6 +86,14 @@ class ScheduleController {
 
 	}
 
+	async checkSchedule(date) {
+
+		const data = await scheduleService.checkSchedule(date)
+		return data
+
+	}
+
+
 
 }
 

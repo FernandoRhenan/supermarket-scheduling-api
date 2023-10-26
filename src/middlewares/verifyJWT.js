@@ -25,7 +25,7 @@ function verifyToken(req, res, next) {
 		req.companyId = decoded.companyId
 		req.isAdmin = decoded.isAdmin
 		next()
-	} catch (err) {
+	} catch {
 		return res.status(401).json({ message: 'Acesso negado', error: true })
 	}
 

@@ -36,6 +36,14 @@ class ScheduleRoutes extends GrandRoute {
 			res.status(data.statusCode).json(data)
 		})
 
+		this.router.get('/check-schedule/:date', verifyToken, async (req, res) => {
+
+			const date = req.params.date
+
+			const data = await scheduleController.checkSchedule(date)
+			res.status(data.statusCode).json(data)
+		})
+
 	}
 
 }
