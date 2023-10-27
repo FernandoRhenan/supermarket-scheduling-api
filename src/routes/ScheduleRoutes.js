@@ -27,6 +27,11 @@ class ScheduleRoutes extends GrandRoute {
 			res.status(data.statusCode).json(data)
 		})
 
+		this.router.patch('/active-schedule', verifyToken, async (req, res) => {
+			const data = await scheduleController.activeSchedule(req.body.schedule)
+			res.status(data.statusCode).json(data)
+		})
+
 		this.router.get('/get-company-schedule', verifyToken, async (req, res) => {
 
 			const company_id = req.companyId

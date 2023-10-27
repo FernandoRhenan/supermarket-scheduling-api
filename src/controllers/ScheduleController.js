@@ -72,6 +72,44 @@ class ScheduleController {
 
 	}
 
+	async activeSchedule(schedules) {
+
+		const { error, message, state } = new CompareData({ value1: schedules, type: 'object' }).compareOneType()
+
+		if (error) {
+			return new DefaultHTTPReturn({ statusCode: 400, message, error, state })
+		}
+
+
+		if (schedules.length > 1) {
+			schedules.forEach((item) => {
+				const { error, message, state } = new CompareData({ value1: item, type: 'number' }).compareOneType()
+
+				if (error) {
+					return new DefaultHTTPReturn({ statusCode: 400, message, error, state })
+				}
+			})
+
+			const data = await scheduleService.activeSchedules(schedules)
+			return data
+
+		} else if (schedules.length == 1) {
+
+			const { error, message, state } = new CompareData({ value1: schedules[0], type: 'number' }).compareOneType()
+
+			if (error) {
+				return new DefaultHTTPReturn({ statusCode: 400, message, error, state })
+			}
+
+			const data = await scheduleService.activeSchedule(schedules[0])
+			return data
+
+		} else {
+			return new DefaultHTTPReturn({ statusCode: 400, message: 'Identificador inválido', error: true, state: 'error' })
+		}
+
+	}
+
 	async getCompanySchedule(company_id) {
 
 		const { error, message, state } = new CompareData({ value1: company_id, type: 'number' }).compareOneType()
@@ -80,7 +118,7 @@ class ScheduleController {
 			return new DefaultHTTPReturn({ statusCode: 400, message, error, state })
 		}
 
-		const data = await scheduleService.getCompanySchedule(company_id1)
+		const data = await scheduleService.getCompanySchedule(company_id)
 		return data
 
 	}

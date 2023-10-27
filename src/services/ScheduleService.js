@@ -114,18 +114,34 @@ class ScheduleService {
 
 		try {
 
-			await this.prisma.schedule.update({
+			const data = await this.prisma.schedule.update({
 				where: { id: schedule },
-				data: { isActive: false }
+				data: { isActive: false },
+				select: { id: true }
 			})
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Agendamento cancelado', state: 'success' })
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Agendamento cancelado', state: 'success', data: data })
 
 		} catch {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
 		}
 	}
+	async activeSchedule(schedule) {
 
+		try {
+
+			const data = await this.prisma.schedule.update({
+				where: { id: schedule },
+				data: { isActive: true },
+				select: { id: true }
+			})
+
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Agendamento ativado', state: 'success', data: data })
+
+		} catch {
+			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
+		}
+	}
 	async cancelSchedules(schedules) {
 
 		try {
@@ -142,7 +158,22 @@ class ScheduleService {
 		}
 
 	}
+	async activeSchedules(schedules) {
 
+		try {
+
+			await this.prisma.schedule.updateMany({
+				data: { isActive: true },
+				where: { id: { in: schedules } }
+			})
+
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, message: 'Agendamento ativado', state: 'success' })
+
+		} catch {
+			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
+		}
+
+	}
 	async getCompanySchedule(company_id) {
 
 		try {
@@ -160,7 +191,6 @@ class ScheduleService {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
 		}
 	}
-
 	async checkSchedule(date) {
 
 		const { data: { minRange, maxRange } } = new ScheduleEntity({}).hoursRange(date)
