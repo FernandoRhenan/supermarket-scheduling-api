@@ -199,8 +199,7 @@ class CompanyService {
 			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: { token }, state: 'success' })
 
 
-		} catch (er) {
-			console.log(er)
+		} catch {
 			return new DefaultHTTPReturn({ error: true, statusCode: 500, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', state: 'error' })
 
 		}

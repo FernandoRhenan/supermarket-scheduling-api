@@ -15,7 +15,6 @@ class ScheduleController {
 	async createSchedule(body) {
 
 		const { date, company_id, frequency } = body
-
 		const { error, message, state } = new ScheduleEntity({ date, frequency, monthRange: 2 }).validateAll()
 
 		const { error: error2, message: message2, state: state2 } = new CompareData({ value1: company_id, type: 'number' }).compareOneType()
@@ -73,9 +72,9 @@ class ScheduleController {
 
 	}
 
-	async getCompanySchedule(company_id1, company_id2) {
+	async getCompanySchedule(company_id) {
 
-		const { error, message, state } = new CompareData({ value1: company_id1, value2: company_id2, type: 'number' }).compareTwoStrict()
+		const { error, message, state } = new CompareData({ value1: company_id, type: 'number' }).compareOneType()
 
 		if (error) {
 			return new DefaultHTTPReturn({ statusCode: 400, message, error, state })

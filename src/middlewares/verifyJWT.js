@@ -4,19 +4,19 @@ import jwt from 'jsonwebtoken'
 function verifyToken(req, res, next) {
 
 	if (!req.headers.authorization) {
-		return res.status(401).json({ message: 'Acesso negado', error: true })
+		return res.status(401).json({ message: 'Acesso negado', error: true, statusCode: 401 })
 
 	}
 
 	const [type, token] = req.headers.authorization.split(' ')
 
 	if (type !== 'Bearer') {
-		return res.status(401).json({ message: 'Acesso negado', error: true })
+		return res.status(401).json({ message: 'Acesso negado', error: true, statusCode: 401 })
 
 	}
 
 	if (!token) {
-		return res.status(401).json({ message: 'Acesso negado', error: true })
+		return res.status(401).json({ message: 'Acesso negado', error: true, statusCode: 401 })
 
 	}
 
@@ -26,7 +26,7 @@ function verifyToken(req, res, next) {
 		req.isAdmin = decoded.isAdmin
 		next()
 	} catch {
-		return res.status(401).json({ message: 'Acesso negado', error: true })
+		return res.status(401).json({ message: 'Acesso negado', error: true, statusCode: 401 })
 	}
 
 }

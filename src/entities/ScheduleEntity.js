@@ -55,9 +55,8 @@ class ScheduleEntity {
 		if (!dateRegex) {
 			return new DefaultValidationReturn({ message: 'Há algum erro de formatação na data', error: true, state: 'warning' })
 		}
-		const dateNow = new Date()
 
-		const minRange = new Date(dateNow.setUTCDate(dateNow.getUTCDate() + 1))
+		const minRange = new Date(this._date)
 		const scheduleDate = new Date(this._date)
 		// retorna uma nova data 2 meses depois da minRange
 		const maxRange = new Date(new Date(minRange).setUTCMonth(minRange.getUTCMonth() + this._monthRange))

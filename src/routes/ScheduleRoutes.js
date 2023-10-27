@@ -27,12 +27,11 @@ class ScheduleRoutes extends GrandRoute {
 			res.status(data.statusCode).json(data)
 		})
 
-		this.router.get('/get-company-schedule/:company_id', verifyToken, async (req, res) => {
+		this.router.get('/get-company-schedule', verifyToken, async (req, res) => {
 
-			const company_id1 = req.companyId
-			const company_id2 = Number(req.params.company_id)
+			const company_id = req.companyId
 
-			const data = await scheduleController.getCompanySchedule(company_id1, company_id2)
+			const data = await scheduleController.getCompanySchedule(company_id)
 			res.status(data.statusCode).json(data)
 		})
 
