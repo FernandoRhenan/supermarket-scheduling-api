@@ -42,7 +42,6 @@ class ScheduleService {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
 		}
 	}
-
 	async createSchedule(schedule) {
 
 		const { date, company_id, frequency, isActive } = schedule
@@ -69,7 +68,6 @@ class ScheduleService {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
 		}
 	}
-
 	async createSchedules(schedule) {
 
 		const { date, company_id, frequency, isActive } = schedule
@@ -109,7 +107,6 @@ class ScheduleService {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })
 		}
 	}
-
 	async cancelSchedule(schedule) {
 
 		try {
@@ -182,6 +179,7 @@ class ScheduleService {
 				where: {
 					company_id
 				},
+				orderBy: { date: 'asc' },
 				select: { isActive: true, date: true, frequency: true, id: true, company_id: true }
 			})
 
