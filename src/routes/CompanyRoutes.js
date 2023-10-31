@@ -47,6 +47,14 @@ class CompanyRoutes extends GrandRoute {
 			const data = await companyController.getCompany(req.companyId)
 			res.status(data.statusCode).json(data)
 		})
+
+		this.router.patch('/change-data-company', verifyToken, async (req, res) => {
+
+			const companyId = req.companyId
+
+			const data = await companyController.changeDataCompany({ ...req.body, companyId })
+			res.status(data.statusCode).json(data)
+		})
 	}
 }
 

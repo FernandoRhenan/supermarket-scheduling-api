@@ -75,6 +75,32 @@ class CompanyController {
 		return data
 
 	}
+
+	async changeDataCompany(body) {
+
+		const { phone, altPhone, name, email } = body
+
+		const company = new CompanyEntity({ altPhone, phone, name, email })
+		const checkedName = company.validateName()
+		const checkedAltPhone = company.validateAltPhone()
+		const checkedPhone = company.validatePhone()
+		const checkedEmail = company.validateEmail()
+
+		const validationErrors = [checkedAltPhone, checkedPhone, checkedName, checkedEmail].filter(item => item.error);
+
+		if (validationErrors.length > 0) {
+			return new DefaultHTTPReturn({
+				statusCode: 400,
+				message: validationErrors[0].message,
+				error: validationErrors[0].error,
+				state: validationErrors[0].state
+			});
+		}
+
+		const data = await companyService.changeDataCompany(body)
+		return data
+	}
+
 }
 
 export default new CompanyController()

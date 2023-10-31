@@ -231,6 +231,30 @@ class CompanyService {
 
 	}
 
+
+	async changeDataCompany(body) {
+
+		const { phone, altPhone, name, email, companyId } = body
+
+		if (!companyId) {
+			return new DefaultHTTPReturn({ error: true, statusCode: 500, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', state: 'error' })
+		}
+
+		try {
+
+			await this.prisma.company.update({
+				where: { id: parseInt(companyId) },
+				data: { phone, altPhone, name, email }
+			})
+
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: {}, state: 'success', message: 'Dados alterados com sucesso' })
+
+		} catch {
+			return new DefaultHTTPReturn({ error: true, statusCode: 500, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', state: 'error' })
+		}
+
+	}
+
 }
 
 export default new CompanyService();
