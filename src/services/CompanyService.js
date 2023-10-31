@@ -5,6 +5,7 @@ import { PrismaClient } from '@prisma/client'
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
+import CompareData from '../utils/CompareData.js'
 
 class CompanyService {
 	constructor() {
@@ -202,6 +203,30 @@ class CompanyService {
 		} catch {
 			return new DefaultHTTPReturn({ error: true, statusCode: 500, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', state: 'error' })
 
+		}
+
+	}
+
+	async getCompany(id) {
+
+		const companyId = parseInt(id)
+		const { message, error, state } = new CompareData({ value1: companyId, type: 'number' }).compareOneType()
+
+		if (error) {
+			return new DefaultHTTPReturn({ statusCode: 400, message, error, state })
+		}
+
+		try {
+
+			const data = await this.prisma.company.findFirst({
+				where: { id },
+				select: { cnpj: true, name: true, corporateName: true, email: true, phone: true, altPhone: true }
+			})
+
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: data, state: 'success' })
+
+		} catch {
+			return new DefaultHTTPReturn({ error: true, statusCode: 500, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', state: 'error' })
 		}
 
 	}

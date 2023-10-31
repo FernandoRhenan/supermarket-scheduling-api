@@ -1,7 +1,6 @@
 import GrandRoute from './GrandRoute.js'
 import companyController from '../controllers/CompanyController.js'
 import verifyToken from '../middlewares/VerifyJWT.js'
-import jwt from 'jsonwebtoken'
 
 class CompanyRoutes extends GrandRoute {
 	constructor() {
@@ -40,6 +39,12 @@ class CompanyRoutes extends GrandRoute {
 		this.router.post('/login', async (req, res) => {
 			const body = req.body
 			const data = await companyController.login(body)
+			res.status(data.statusCode).json(data)
+		})
+
+		this.router.get('/get-company', verifyToken, async (req, res) => {
+
+			const data = await companyController.getCompany(req.companyId)
 			res.status(data.statusCode).json(data)
 		})
 	}

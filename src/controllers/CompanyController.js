@@ -68,6 +68,13 @@ class CompanyController {
 		return data
 
 	}
+
+	async getCompany(id) {
+
+		const data = await companyService.getCompany(id)
+		return data
+
+	}
 }
 
 export default new CompanyController()
