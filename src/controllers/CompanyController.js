@@ -101,6 +101,33 @@ class CompanyController {
 		return data
 	}
 
+	async changePassword(body) {
+
+		const { currentPassword, newPassword } = body
+
+		const companyPass = new CompanyEntity({ password: currentPassword }).validatePassword()
+		const companyNewPass = new CompanyEntity({ password: newPassword }).validatePassword()
+
+		const validationErrors = [companyPass, companyNewPass].filter(item => item.error);
+
+		if (validationErrors.length > 0) {
+			return new DefaultHTTPReturn({
+				statusCode: 400,
+				message: validationErrors[0].message,
+				error: validationErrors[0].error,
+				state: validationErrors[0].state
+			});
+		}
+
+		const data = await companyService.changePassword(body)
+		return data
+	}
+
+	async deleteCompany(companyId) {
+		const data = await companyService.deleteCompany(companyId)
+		return data
+	}
+
 }
 
 export default new CompanyController()

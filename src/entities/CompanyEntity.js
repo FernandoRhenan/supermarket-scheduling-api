@@ -23,6 +23,14 @@ class CompanyEntity {
 		this._isAdmin = isAdmin
 	}
 
+	get password() {
+		return this._password
+	}
+
+	set password(pass) {
+		this._password = pass
+	}
+
 	validateAll() {
 		const password = this.validatePassword()
 		const name = this.validateName()

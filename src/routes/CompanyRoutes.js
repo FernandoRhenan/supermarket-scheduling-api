@@ -55,6 +55,20 @@ class CompanyRoutes extends GrandRoute {
 			const data = await companyController.changeDataCompany({ ...req.body, companyId })
 			res.status(data.statusCode).json(data)
 		})
+
+		this.router.patch('/change-password', verifyToken, async (req, res) => {
+			const companyId = req.companyId
+
+			const data = await companyController.changePassword({ ...req.body, companyId })
+			res.status(data.statusCode).json(data)
+		})
+
+		this.router.delete('/delete-company', verifyToken, async (req, res) => {
+			const companyId = req.companyId
+
+			const data = await companyController.deleteCompany(companyId)
+			res.status(data.statusCode).json(data)
+		})
 	}
 }
 

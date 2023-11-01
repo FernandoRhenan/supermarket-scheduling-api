@@ -255,6 +255,69 @@ class CompanyService {
 
 	}
 
+	async changePassword(body) {
+
+		const { currentPassword, newPassword, companyId } = body
+		if (!companyId) {
+			return new DefaultHTTPReturn({ error: true, statusCode: 500, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', state: 'error' })
+		}
+
+		try {
+
+			const currentCompany = await this.prisma.company.findUnique({
+				where: { id: parseInt(companyId) },
+				select: { password: true }
+			})
+
+			if (currentCompany.password) {
+				const unhashedPass = await bcrypt.compare(currentPassword, currentCompany.password)
+				if (!unhashedPass) {
+					return new DefaultHTTPReturn({ statusCode: 400, message: 'Senha atual incorreta', error: true, state: 'error' })
+				} else {
+
+					const hash = bcrypt.hashSync(newPassword, 8);
+
+					await this.prisma.company.update({
+						where: { id: parseInt(companyId) },
+						data: { password: hash }
+					})
+					return new DefaultHTTPReturn({ statusCode: 200, message: 'Senha alterada com sucesso', error: false, state: 'success' })
+				}
+
+			} else {
+				return new DefaultHTTPReturn({ error: true, statusCode: 500, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', state: 'error' })
+			}
+
+		} catch {
+			return new DefaultHTTPReturn({ error: true, statusCode: 500, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', state: 'error' })
+		}
+
+	}
+
+
+	async deleteCompany(companyId) {
+
+		if (!companyId) {
+			return new DefaultHTTPReturn({ error: true, statusCode: 500, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', state: 'error' })
+		}
+
+		try {
+
+			await this.prisma.company.delete({
+				where: { id: parseInt(companyId) },
+			})
+
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: {}, state: 'success', message: '' })
+
+		} catch (err) {
+			console.log(err);
+			return new DefaultHTTPReturn({ error: true, statusCode: 500, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', state: 'error' })
+		}
+
+	}
+
+
+
 }
 
 export default new CompanyService();

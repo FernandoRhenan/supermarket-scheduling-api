@@ -34,7 +34,7 @@ model Schedule {
   date       DateTime
   isActive   Boolean
   frequency  String
-  Company    Company? @relation(fields: [company_id], references: [id])
+  Company    Company? @relation(fields: [company_id], references: [id], onDelete: Cascade)
   company_id Int
 
   createdAt DateTime @default(now())
