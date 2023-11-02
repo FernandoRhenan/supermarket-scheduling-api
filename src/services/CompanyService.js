@@ -112,6 +112,7 @@ class CompanyService {
 
 
 		} catch (err) {
+			console.log(err)
 			switch (err.message) {
 				case 'invalid token':
 					return new DefaultHTTPReturn({ error: true, message: 'O seu token de acesso foi modificado ou manipulado', statusCode: 400, state: 'error' })
