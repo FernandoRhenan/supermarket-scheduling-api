@@ -124,7 +124,6 @@ class ScheduleEntity {
 		const minRange = new Date(new Date().setUTCDate(new Date().getUTCDate() + 1))
 
 		const maxRange = new Date(new Date(minRange).setUTCMonth(minRange.getUTCMonth() + this._monthRange))
-
 		return new DefaultInternalReturn({ error: true, message: '', state: 'success', data: { minRange, maxRange } })
 
 	}

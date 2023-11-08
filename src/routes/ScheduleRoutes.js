@@ -1,6 +1,7 @@
 import GrandRoute from './GrandRoute.js'
 import scheduleController from '../controllers/ScheduleController.js'
 import verifyToken from '../middlewares/VerifyJWT.js'
+import isAdmin from '../middlewares/isAdmin.js'
 
 class ScheduleRoutes extends GrandRoute {
 	constructor() {
@@ -10,7 +11,7 @@ class ScheduleRoutes extends GrandRoute {
 
 	initializeRoutes() {
 
-		this.router.get('/check-all-schedules', verifyToken, async (req, res) => {
+		this.router.get('/check-all-schedules', verifyToken, isAdmin, async (req, res) => {
 
 			const data = await scheduleController.checkAllSchedules()
 			res.status(data.statusCode).json(data)

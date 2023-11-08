@@ -15,8 +15,7 @@ class ScheduleService {
 	async checkAllSchedules() {
 
 		try {
-			const { minRange, maxRange } = new ScheduleEntity({ monthRange: 2 }).monthRange()
-
+			const { data: { minRange, maxRange } } = new ScheduleEntity({ monthRange: 2 }).monthRange()
 			const dates = await this.prisma.schedule.findMany({
 				where: {
 					AND: [
@@ -33,7 +32,7 @@ class ScheduleService {
 					],
 					isActive: true
 				},
-				select: { date: true, id: true }
+				select: { date: true, id: true, company_id: true, frequency: true, isActive: true, Company: { select: { name: true } } }
 			})
 
 			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: { dates }, state: 'success' })
