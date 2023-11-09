@@ -232,7 +232,6 @@ class CompanyService {
 
 	}
 
-
 	async changeDataCompany(body) {
 
 		const { phone, altPhone, name, email, companyId } = body
@@ -295,7 +294,6 @@ class CompanyService {
 
 	}
 
-
 	async deleteCompany(companyId) {
 
 		if (!companyId) {
@@ -312,6 +310,27 @@ class CompanyService {
 
 		} catch (err) {
 			console.log(err);
+			return new DefaultHTTPReturn({ error: true, statusCode: 500, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', state: 'error' })
+		}
+
+	}
+
+	async getAllCompanies(req) {
+
+		const { take, skip } = req.query
+
+		try {
+
+			const companies = await this.prisma.company.findMany({
+				skip: Number(skip),
+				take: Number(take),
+				select: { altPhone: true, confirmedAccount: true, corporateName: true, cnpj: true, createdAt: true, email: true, id: true, name: true, phone: true, updatedAt: true, isAdmin: true }
+			})
+			const count = await this.prisma.company.count()
+
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: { companies, count }, state: 'success', message: '' })
+
+		} catch {
 			return new DefaultHTTPReturn({ error: true, statusCode: 500, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', state: 'error' })
 		}
 

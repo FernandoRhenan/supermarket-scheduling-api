@@ -1,6 +1,7 @@
 import GrandRoute from './GrandRoute.js'
 import companyController from '../controllers/CompanyController.js'
 import verifyToken from '../middlewares/VerifyJWT.js'
+import isAdmin from '../middlewares/isAdmin.js'
 
 class CompanyRoutes extends GrandRoute {
 	constructor() {
@@ -67,6 +68,11 @@ class CompanyRoutes extends GrandRoute {
 			const companyId = req.companyId
 
 			const data = await companyController.deleteCompany(companyId)
+			res.status(data.statusCode).json(data)
+		})
+
+		this.router.get('/get-all-companies', verifyToken, isAdmin, async (req, res) => {
+			const data = await companyController.getAllCompanies(req)
 			res.status(data.statusCode).json(data)
 		})
 	}

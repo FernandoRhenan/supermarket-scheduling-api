@@ -127,6 +127,10 @@ class CompanyController {
 		const data = await companyService.deleteCompany(companyId)
 		return data
 	}
+	async getAllCompanies(req) {
+		const data = await companyService.getAllCompanies(req)
+		return data
+	}
 
 }
 
