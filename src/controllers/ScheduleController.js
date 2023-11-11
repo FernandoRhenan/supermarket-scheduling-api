@@ -5,9 +5,9 @@ import CompareData from '../utils/CompareData.js'
 
 class ScheduleController {
 
-	async checkAllSchedules() {
+	async checkAllSchedules(req) {
 
-		const data = await scheduleService.checkAllSchedules()
+		const data = await scheduleService.checkAllSchedules(req)
 		return data
 
 	}

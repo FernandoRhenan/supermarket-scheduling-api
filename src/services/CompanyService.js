@@ -97,6 +97,7 @@ class CompanyService {
 					pass: process.env.EMAIL_PASS,
 				},
 			});
+			// console.log(`${process.env.SITE_URL}/email-validation?token=${token}`)
 
 			const { accepted, rejected } = await transporter.sendMail({
 				from: process.env.EMAIL_SENDER, // sender address
@@ -105,6 +106,7 @@ class CompanyService {
 				text: "Hello world?", // plain text body
 				html: `<b>Hello world? <a href=${process.env.SITE_URL}/email-validation?token=${token}>Confimar e-mail</a></b>`, // html body
 			});
+
 
 			if (accepted.length !== 0 && rejected.length === 0) {
 				return new DefaultHTTPReturn({ error: false, statusCode: 200, message: `Seu e-mail de confirmação foi enviado para ${email}`, state: 'success', data: { email } })

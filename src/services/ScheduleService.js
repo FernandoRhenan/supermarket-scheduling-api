@@ -1,10 +1,6 @@
 import 'dotenv/config.js'
-import axios from 'axios'
 import DefaultHTTPReturn from '../utils/returnTypes/DefaultHTTPReturn.js'
 import { PrismaClient } from '@prisma/client'
-import nodemailer from 'nodemailer';
-import jwt from 'jsonwebtoken'
-import bcrypt from 'bcryptjs'
 import ScheduleEntity from '../entities/ScheduleEntity.js';
 
 class ScheduleService {
@@ -12,7 +8,9 @@ class ScheduleService {
 		this.prisma = new PrismaClient();
 	}
 
-	async checkAllSchedules() {
+	async checkAllSchedules(req) {
+
+		const { take, skip } = req.query
 
 		try {
 			const { data: { minRange, maxRange } } = new ScheduleEntity({ monthRange: 2 }).monthRange()
@@ -32,10 +30,17 @@ class ScheduleService {
 					],
 					isActive: true
 				},
-				select: { date: true, id: true, company_id: true, frequency: true, isActive: true, Company: { select: { name: true } } }
+				select: { date: true, id: true, company_id: true, frequency: true, isActive: true, Company: { select: { name: true } } },
+				skip: Number(skip),
+				take: Number(take),
+				orderBy: {
+					date: 'asc'
+				}
 			})
 
-			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: { dates }, state: 'success' })
+			const count = await this.prisma.schedule.count()
+
+			return new DefaultHTTPReturn({ error: false, statusCode: 200, data: { dates, count }, state: 'success' })
 
 		} catch {
 			return new DefaultHTTPReturn({ error: true, message: 'Ocorreu um erro, por favor, tente novamente mais tarde', statusCode: 500, state: 'error' })

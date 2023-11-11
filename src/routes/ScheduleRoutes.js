@@ -13,7 +13,7 @@ class ScheduleRoutes extends GrandRoute {
 
 		this.router.get('/check-all-schedules', verifyToken, isAdmin, async (req, res) => {
 
-			const data = await scheduleController.checkAllSchedules()
+			const data = await scheduleController.checkAllSchedules(req)
 			res.status(data.statusCode).json(data)
 		})
 
