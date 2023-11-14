@@ -21,14 +21,8 @@ class ScheduleService {
 							date: {
 								gte: minRange.toISOString(),
 							},
-						},
-						{
-							date: {
-								lte: maxRange.toISOString()
-							}
 						}
-					],
-					isActive: true
+					]
 				},
 				select: { date: true, id: true, company_id: true, frequency: true, isActive: true, Company: { select: { name: true } } },
 				skip: Number(skip),

@@ -65,7 +65,7 @@ class CompanyService {
 					phone: _phone,
 					altPhone: _altPhone,
 					password: _password,
-					confirmedAccount: _confirmedAccount,
+					confirmedAccount: true,
 					isAdmin: _isAdmin
 				},
 				select: { email: true, id: true }

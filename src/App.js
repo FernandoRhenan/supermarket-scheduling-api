@@ -2,6 +2,8 @@ import express, { urlencoded } from 'express'
 import companyRoutes from './routes/CompanyRoutes.js'
 import scheduleRoutes from './routes/ScheduleRoutes.js'
 import cors from 'cors'
+import CronJob from './CronJob.js'
+import cron from 'node-cron'
 
 class App {
 
@@ -10,6 +12,7 @@ class App {
 		this.app = express()
 		this.config()
 		this.routes()
+		this.cron()
 	}
 
 	config() {
@@ -30,6 +33,22 @@ class App {
 		this.app.use(`${this.prefix}/company`, companyRoutes.router)
 		this.app.use(`${this.prefix}/schedule`, scheduleRoutes.router)
 	}
+
+	cron() {
+
+		cron.schedule('39 14 * * *', async () => {
+
+			const cronJob = new CronJob()
+			await cronJob.updateSchedules()
+
+		}, {
+			scheduled: true,
+			timezone: "America/Sao_Paulo",
+			runOnInit: true
+		});
+
+	}
+
 }
 
 export default new App().app
