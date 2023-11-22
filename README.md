@@ -1,10 +1,5 @@
 Api de uma aplicação de agendamentos para entregadores em supermercados!
 
-<img src="./screenshots/1.png">
-<img src="./screenshots/2.png">
-<img src="./screenshots/3.png">
-<img src="./screenshots/4.png">
-
 Certifique-se de ter o `nodejs` e `docker` instalado na máquina.
 
 O primeiro passo será clonar o repositório para sua maquina.

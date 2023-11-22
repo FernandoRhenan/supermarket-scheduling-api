@@ -6,7 +6,8 @@
 	"type": "module",
 	"scripts": {
 		"start": "node src/server.js",
-		"dev": "nodemon src/server.js",
+		"dev": "docker compose up -d && nodemon src/server.js",
+		"initialize": "docker compose up -d && npx prisma migrate dev && npx prisma db seed && nodemon src/server.js",
 		"test:unit": "vitest",
 		"prettier:check": "prettier . --check",
 		"prettier:write": "prettier . --write"

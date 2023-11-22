@@ -12,7 +12,7 @@ class App {
 		this.app = express()
 		this.config()
 		this.routes()
-		this.cron()
+		// this.cron()
 	}
 
 	config() {
@@ -36,7 +36,7 @@ class App {
 
 	cron() {
 
-		cron.schedule('39 14 * * *', async () => {
+		cron.schedule('0 01 * * *', async () => {
 
 			const cronJob = new CronJob()
 			await cronJob.updateSchedules()
