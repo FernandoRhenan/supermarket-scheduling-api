@@ -13,6 +13,8 @@ Isso será responsável por inicializar o docker, as migrações do banco de dad
 
 Caso, não seja sua primeira vez rodando o projeto, basta apenas digitar `npm run dev`. Então o docker e o servidor serão inicializados.
 
+*Não se esqueça de preencher suas próprias variáveis de ambiente, criando um aquivo `.env` e colando as variáveis de `.env.exemple` para dentro de `.env`, assim então posteriomente atribuír valores as variáveis.
+
 ### Frontend
 
 O projeto da interface de usuário está disponível em:
