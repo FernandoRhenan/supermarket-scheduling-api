@@ -20,7 +20,7 @@ Isso será responsável por inicializar o docker, as migrações do banco de dad
 
 Caso, não seja sua primeira vez rodando o projeto, basta apenas digitar `npm run dev`. Então o docker e o servidor serão inicializados.
 
-*Não se esqueça de preencher suas próprias variáveis de ambiente, criando um aquivo `.env` na raiz do projeto e copiando as variáveis de `.env.exemple` para dentro de `.env`. Assim então posteriomente atribuír valores as variáveis para que a api e banco de dados funcione.
+*Não se esqueça de preencher suas próprias variáveis de ambiente, criando um aquivo `.env` na raiz do projeto e copiando as variáveis de `.env.exemple` para dentro de `.env`. Assim então posteriomente atribuír valores as variáveis para que a api e banco de dados funcionem.
 
 ### Frontend
 
