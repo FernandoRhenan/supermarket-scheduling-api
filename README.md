@@ -1,5 +1,9 @@
 API de uma aplicação de agendamentos para entregadores em supermercados!
 
+Nessa aplicação é possível agendar entregas de forma única, semanal, quinzenal ou a cada 28 dias.
+Tem o objetivo de automatizar e otimizar o processo de agendamento e cancelamento de agendamento.
+Há um painel administrativo onde o administrador pode ver todas as empresas cadastradas e também ver todos os agendamentos.
+
 Pre-visualização:
 
 <img src="https://github.com/FernandoRhenan/supermarket-scheduling-api/assets/101434984/16757043-671e-4b08-9d77-fb9edd1e90f6" alt="login_img">
